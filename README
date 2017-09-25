@@ -1,47 +1,7 @@
 Pagila
 ======
 
-Pagila is a port of the Sakila example database available for MySQL, which was  
-originally developed by Mike Hillyer of the MySQL AB documentation team. It  
-is intended to provide a standard schema that can be used for examples in 
-books, tutorials, articles, samples, etc.
-
-All the tables, data, views, and functions have been ported; some of the changes made were:
-
-* Changed char(1) true/false fields to true boolean fields
-* The last_update columns were set with triggers to update them
-* Added foreign keys
-* Removed 'DEFAULT 0' on foreign keys since it's pointless with real FK's
-* Used PostgreSQL built-in fulltext searching for fulltext index.  Removed the need for the
-  film_text table.
-* The rewards_report function was ported to a simple SRF
-
-The schema and data for the Sakila database were made available under the BSD license 
-which can be found at http://www.opensource.org/licenses/bsd-license.php. The pagila 
-database is made available under this license as well.  
-
-
-FULLTEXT SEARCH
----------------
-
-In older versions of pagila, the fulltext search capabilities were split into a 
-seperate file, so they could be loaded into only databases that support fulltext.
-Starting in PostgreSQL 8.3, fulltext functionality is built in, so now these
-parts of the schema exist in the main schema file. 
-
-Example usage:
-
-SELECT * FROM film WHERE fulltext @@ to_tsquery('fate&india');
-
-
-PARTITIONED TABLES
-------------------
-
-The payment table is designed as a partitioned table with a 6 month timespan for the date ranges. 
-If you want to take full advantage of table partitioning, you need to make sure constraint_exclusion 
-is turned on in your database. You can do this by setting "constraint_exclusion = on" in your 
-postgresql.conf, or by issuing the command "ALTER DATABASE pagila SET constraint_exclusion = on" 
-(substitute pagila for your database name if installing into a database with a different name)
+Pagila is a port of the Sakila example database originally created for MySQL by Mike Hillyer of the MySQL AB documentation team. It is intended to provide a standard schema that can be used for examples in books, tutorials, articles, samples, etc...  
 
 
 INSTALL NOTE
@@ -53,38 +13,67 @@ only need to install one of them. Both formats are provided for those who have
 trouble using one version or another.
 
 
+PARTITIONED TABLES
+------------------
+
+The payment table is designed as a partitioned table with a 6 month timespan for the date ranges. If you want to take full advantage of table partitioning, you need to make sure constraint_exclusion is turned on in your database. You can do this by setting "constraint_exclusion = on" in your postgresql.conf, or by issuing the command "ALTER DATABASE pagila SET constraint_exclusion = on" (substitute pagila for your database name if installing into a database with a different name)
+
+
 ARTICLES
 --------------
 
 The following articles make use of pagila to showcase various PostgreSQL features:
 
+* Sample Applications - Pagila (PostgreSQL)
+https://codeontime.com/learn/sample-applications/pagila-postgresql
+
 * Showcasing REST in PostgreSQL - The PreQuel
-http://www.postgresonline.com/journal/index.php?/archives/32-Showcasing-REST-in-PostgreSQL-The-PreQuel.html#extended
+http://www.postgresonline.com/journal/archives/32-Showcasing-REST-in-PostgreSQL-The-PreQuel.html
 
 * PostgreSQL 8.3 Features: Enum Datatype
-http://people.planetpostgresql.org/xzilla/index.php?/archives/320-PostgreSQL-8.3-Features-Enum-Datatype.html
+http://xzilla.net/blog/2007/Sep/PostgreSQL-8.3-Features-Enum-Datatype.html
 
 * Email Validation with pl/PHP
-http://people.planetpostgresql.org/xzilla/index.php?/archives/261-Re-inventing-Gregs-method-to-prevent-re-inventing.html
-
-* Getting Started with PostgreSQL for Windows
-http://www.charltonlopez.com/index.php?option=com_content&task=view&id=56&Itemid=38
+http://xzilla.net/blog/2006/Sep/Re-inventing-Gregs-method-to-prevent-re-inventing.html
 
 * RATIO_TO_REPORT in PostgreSQL
-http://people.planetpostgresql.org/xzilla/index.php?/search/pagila/P3.html
-
-* The postmaster and postgres Processes
-http://www.charltonlopez.com/index.php?option=com_content&task=view&id=57&Itemid=38
+http://xzilla.net/blog/2006/Jul/RATIOTOREPORT-in-PostgreSQL.html
 
 * Building Rails to Legacy Applications :: Take Control of Active Record
-http://people.planetpostgresql.org/xzilla/index.php?/archives/220-Building-Rails-to-Legacy-Applications-Take-Control-of-Active-Record.html
+http://xzilla.net/blog/2006/Jun/Building-Rails-to-Legacy-Applications-Take-Control-of-Active-Record.html
 
 * Building Rails to Legacy Applications :: Masking the Database
-http://people.planetpostgresql.org/xzilla/index.php?/archives/213-Building-Rails-to-Legacy-Applications-Masking-the-Database.html
+http://xzilla.net/blog/2006/Jun/Building-Rails-to-Legacy-Applications-Masking-the-Database.html
+
+
+PORT INFO 
+---------
+
+For those interested in the original porting information, all tables, data, views, and functions have been ported, which resulted in some schema changes, including: 
+
+* Changed char(1) true/false fields to true boolean fields
+* The last_update columns were set with triggers to update them
+* Added foreign keys
+* Removed 'DEFAULT 0' on foreign keys since it's pointless with real FK's
+* Used PostgreSQL built-in fulltext searching for fulltext indexing, removing the need for the film_text table.  
+* The rewards_report function was ported to a simple SRF
+
+The schema and data for the Sakila database were made available under the BSD license which can be found at http://www.opensource.org/licenses/bsd-license.php. 
+
+LICENSE
+-------
+Pagila is made available under The PostgreSQL License (https://opensource.org/licenses/PostgreSQL)
+
+Note: Version of Pagila prior to and including 0.10.1 were also made available under the same BSD license as Sakila. 
 
 
 VERSION HISTORY
 ---------------
+
+Version 9.6.0
+* Change versioning to track Postgres Major Releases
+* Update articles section to current links (where available)
+* Wordsmithing on README doc 
 
 Version 0.10.1
 * Add pagila-data-insert.sql file, added articles section
@@ -97,5 +86,4 @@ Version 0.9
 
 Version 0.8 
 * First release of pagila
-
 
