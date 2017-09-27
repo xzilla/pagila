@@ -2,9 +2,6 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.5
--- Dumped by pg_dump version 9.6.5
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -736,8 +733,9 @@ CREATE TABLE payment (
     staff_id smallint NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp without time zone NOT NULL
-);
+    payment_date timestamp with time zone NOT NULL
+)
+PARTITION BY RANGE (payment_date);
 
 
 ALTER TABLE payment OWNER TO postgres;
@@ -746,10 +744,8 @@ ALTER TABLE payment OWNER TO postgres;
 -- Name: payment_p2007_01; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2007_01 (
-    CONSTRAINT payment_p2007_01_payment_date_check CHECK (((payment_date >= '2007-01-01 00:00:00'::timestamp without time zone) AND (payment_date < '2007-02-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2007_01 PARTITION OF payment
+FOR VALUES FROM ('2007-01-01 00:00:00-08') TO ('2007-02-01 00:00:00-08');
 
 
 ALTER TABLE payment_p2007_01 OWNER TO postgres;
@@ -758,10 +754,8 @@ ALTER TABLE payment_p2007_01 OWNER TO postgres;
 -- Name: payment_p2007_02; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2007_02 (
-    CONSTRAINT payment_p2007_02_payment_date_check CHECK (((payment_date >= '2007-02-01 00:00:00'::timestamp without time zone) AND (payment_date < '2007-03-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2007_02 PARTITION OF payment
+FOR VALUES FROM ('2007-02-01 00:00:00-08') TO ('2007-03-01 00:00:00-08');
 
 
 ALTER TABLE payment_p2007_02 OWNER TO postgres;
@@ -770,10 +764,8 @@ ALTER TABLE payment_p2007_02 OWNER TO postgres;
 -- Name: payment_p2007_03; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2007_03 (
-    CONSTRAINT payment_p2007_03_payment_date_check CHECK (((payment_date >= '2007-03-01 00:00:00'::timestamp without time zone) AND (payment_date < '2007-04-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2007_03 PARTITION OF payment
+FOR VALUES FROM ('2007-03-01 00:00:00-08') TO ('2007-04-01 00:00:00-07');
 
 
 ALTER TABLE payment_p2007_03 OWNER TO postgres;
@@ -782,10 +774,8 @@ ALTER TABLE payment_p2007_03 OWNER TO postgres;
 -- Name: payment_p2007_04; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2007_04 (
-    CONSTRAINT payment_p2007_04_payment_date_check CHECK (((payment_date >= '2007-04-01 00:00:00'::timestamp without time zone) AND (payment_date < '2007-05-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2007_04 PARTITION OF payment
+FOR VALUES FROM ('2007-04-01 00:00:00-07') TO ('2007-05-01 00:00:00-07');
 
 
 ALTER TABLE payment_p2007_04 OWNER TO postgres;
@@ -794,10 +784,8 @@ ALTER TABLE payment_p2007_04 OWNER TO postgres;
 -- Name: payment_p2007_05; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2007_05 (
-    CONSTRAINT payment_p2007_05_payment_date_check CHECK (((payment_date >= '2007-05-01 00:00:00'::timestamp without time zone) AND (payment_date < '2007-06-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2007_05 PARTITION OF payment
+FOR VALUES FROM ('2007-05-01 00:00:00-07') TO ('2007-06-01 00:00:00-07');
 
 
 ALTER TABLE payment_p2007_05 OWNER TO postgres;
@@ -806,10 +794,8 @@ ALTER TABLE payment_p2007_05 OWNER TO postgres;
 -- Name: payment_p2007_06; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payment_p2007_06 (
-    CONSTRAINT payment_p2007_06_payment_date_check CHECK (((payment_date >= '2007-06-01 00:00:00'::timestamp without time zone) AND (payment_date < '2007-07-01 00:00:00'::timestamp without time zone)))
-)
-INHERITS (payment);
+CREATE TABLE payment_p2007_06 PARTITION OF payment
+FOR VALUES FROM ('2007-06-01 00:00:00-07') TO ('2007-07-01 00:00:00-07');
 
 
 ALTER TABLE payment_p2007_06 OWNER TO postgres;
@@ -844,25 +830,6 @@ CREATE TABLE rental (
 
 
 ALTER TABLE rental OWNER TO postgres;
-
---
--- Name: sales_by_film_category; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW sales_by_film_category AS
- SELECT c.name AS category,
-    sum(p.amount) AS total_sales
-   FROM (((((payment p
-     JOIN rental r ON ((p.rental_id = r.rental_id)))
-     JOIN inventory i ON ((r.inventory_id = i.inventory_id)))
-     JOIN film f ON ((i.film_id = f.film_id)))
-     JOIN film_category fc ON ((f.film_id = fc.film_id)))
-     JOIN category c ON ((fc.category_id = c.category_id)))
-  GROUP BY c.name
-  ORDER BY (sum(p.amount)) DESC;
-
-
-ALTER TABLE sales_by_film_category OWNER TO postgres;
 
 --
 -- Name: staff_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -900,6 +867,27 @@ CREATE TABLE staff (
 ALTER TABLE staff OWNER TO postgres;
 
 --
+-- Name: staff_list; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW staff_list AS
+ SELECT s.staff_id AS id,
+    (((s.first_name)::text || ' '::text) || (s.last_name)::text) AS name,
+    a.address,
+    a.postal_code AS "zip code",
+    a.phone,
+    city.city,
+    country.country,
+    s.store_id AS sid
+   FROM (((staff s
+     JOIN address a ON ((s.address_id = a.address_id)))
+     JOIN city ON ((a.city_id = city.city_id)))
+     JOIN country ON ((city.country_id = country.country_id)));
+
+
+ALTER TABLE staff_list OWNER TO postgres;
+
+--
 -- Name: store_store_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -926,49 +914,6 @@ CREATE TABLE store (
 
 
 ALTER TABLE store OWNER TO postgres;
-
---
--- Name: sales_by_store; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW sales_by_store AS
- SELECT (((c.city)::text || ','::text) || (cy.country)::text) AS store,
-    (((m.first_name)::text || ' '::text) || (m.last_name)::text) AS manager,
-    sum(p.amount) AS total_sales
-   FROM (((((((payment p
-     JOIN rental r ON ((p.rental_id = r.rental_id)))
-     JOIN inventory i ON ((r.inventory_id = i.inventory_id)))
-     JOIN store s ON ((i.store_id = s.store_id)))
-     JOIN address a ON ((s.address_id = a.address_id)))
-     JOIN city c ON ((a.city_id = c.city_id)))
-     JOIN country cy ON ((c.country_id = cy.country_id)))
-     JOIN staff m ON ((s.manager_staff_id = m.staff_id)))
-  GROUP BY cy.country, c.city, s.store_id, m.first_name, m.last_name
-  ORDER BY cy.country, c.city;
-
-
-ALTER TABLE sales_by_store OWNER TO postgres;
-
---
--- Name: staff_list; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW staff_list AS
- SELECT s.staff_id AS id,
-    (((s.first_name)::text || ' '::text) || (s.last_name)::text) AS name,
-    a.address,
-    a.postal_code AS "zip code",
-    a.phone,
-    city.city,
-    country.country,
-    s.store_id AS sid
-   FROM (((staff s
-     JOIN address a ON ((s.address_id = a.address_id)))
-     JOIN city ON ((a.city_id = city.city_id)))
-     JOIN country ON ((city.country_id = country.country_id)));
-
-
-ALTER TABLE staff_list OWNER TO postgres;
 
 --
 -- Name: payment_p2007_01 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
@@ -1010,265 +955,6 @@ ALTER TABLE ONLY payment_p2007_05 ALTER COLUMN payment_id SET DEFAULT nextval('p
 --
 
 ALTER TABLE ONLY payment_p2007_06 ALTER COLUMN payment_id SET DEFAULT nextval('payment_payment_id_seq'::regclass);
-
-
---
--- Data for Name: actor; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY actor (actor_id, first_name, last_name, last_update) FROM stdin;
-\.
-
-
---
--- Name: actor_actor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('actor_actor_id_seq', 1, false);
-
-
---
--- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY address (address_id, address, address2, district, city_id, postal_code, phone, last_update) FROM stdin;
-\.
-
-
---
--- Name: address_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('address_address_id_seq', 1, false);
-
-
---
--- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY category (category_id, name, last_update) FROM stdin;
-\.
-
-
---
--- Name: category_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('category_category_id_seq', 1, false);
-
-
---
--- Data for Name: city; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY city (city_id, city, country_id, last_update) FROM stdin;
-\.
-
-
---
--- Name: city_city_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('city_city_id_seq', 1, false);
-
-
---
--- Data for Name: country; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY country (country_id, country, last_update) FROM stdin;
-\.
-
-
---
--- Name: country_country_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('country_country_id_seq', 1, false);
-
-
---
--- Data for Name: customer; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY customer (customer_id, store_id, first_name, last_name, email, address_id, activebool, create_date, last_update, active) FROM stdin;
-\.
-
-
---
--- Name: customer_customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('customer_customer_id_seq', 1, false);
-
-
---
--- Data for Name: film; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY film (film_id, title, description, release_year, language_id, original_language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext) FROM stdin;
-\.
-
-
---
--- Data for Name: film_actor; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY film_actor (actor_id, film_id, last_update) FROM stdin;
-\.
-
-
---
--- Data for Name: film_category; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY film_category (film_id, category_id, last_update) FROM stdin;
-\.
-
-
---
--- Name: film_film_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('film_film_id_seq', 1, false);
-
-
---
--- Data for Name: inventory; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY inventory (inventory_id, film_id, store_id, last_update) FROM stdin;
-\.
-
-
---
--- Name: inventory_inventory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('inventory_inventory_id_seq', 1, false);
-
-
---
--- Data for Name: language; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY language (language_id, name, last_update) FROM stdin;
-\.
-
-
---
--- Name: language_language_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('language_language_id_seq', 1, false);
-
-
---
--- Data for Name: payment; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_p2007_01; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2007_01 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_p2007_02; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2007_02 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_p2007_03; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2007_03 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_p2007_04; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2007_04 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_p2007_05; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2007_05 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_p2007_06; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY payment_p2007_06 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
-\.
-
-
---
--- Name: payment_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('payment_payment_id_seq', 1, false);
-
-
---
--- Data for Name: rental; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY rental (rental_id, rental_date, inventory_id, customer_id, return_date, staff_id, last_update) FROM stdin;
-\.
-
-
---
--- Name: rental_rental_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('rental_rental_id_seq', 1, false);
-
-
---
--- Data for Name: staff; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY staff (staff_id, first_name, last_name, address_id, email, store_id, active, username, password, last_update, picture) FROM stdin;
-\.
-
-
---
--- Name: staff_staff_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('staff_staff_id_seq', 1, false);
-
-
---
--- Data for Name: store; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY store (store_id, manager_staff_id, address_id, last_update) FROM stdin;
-\.
-
-
---
--- Name: store_store_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('store_store_id_seq', 1, false);
 
 
 --
@@ -1344,6 +1030,54 @@ ALTER TABLE ONLY film
 
 
 --
+-- Name: payment_p2007_01 idx_pk_payment_p2007_01_payment_id; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2007_01
+    ADD CONSTRAINT idx_pk_payment_p2007_01_payment_id PRIMARY KEY (payment_id);
+
+
+--
+-- Name: payment_p2007_02 idx_pk_payment_p2007_02_payment_id; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2007_02
+    ADD CONSTRAINT idx_pk_payment_p2007_02_payment_id PRIMARY KEY (payment_id);
+
+
+--
+-- Name: payment_p2007_03 idx_pk_payment_p2007_03_payment_id; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2007_03
+    ADD CONSTRAINT idx_pk_payment_p2007_03_payment_id PRIMARY KEY (payment_id);
+
+
+--
+-- Name: payment_p2007_04 idx_pk_payment_p2007_04_payment_id; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2007_04
+    ADD CONSTRAINT idx_pk_payment_p2007_04_payment_id PRIMARY KEY (payment_id);
+
+
+--
+-- Name: payment_p2007_05 idx_pk_payment_p2007_05_payment_id; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2007_05
+    ADD CONSTRAINT idx_pk_payment_p2007_05_payment_id PRIMARY KEY (payment_id);
+
+
+--
+-- Name: payment_p2007_06 idx_pk_payment_p2007_06_payment_id; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY payment_p2007_06
+    ADD CONSTRAINT idx_pk_payment_p2007_06_payment_id PRIMARY KEY (payment_id);
+
+
+--
 -- Name: inventory inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1357,14 +1091,6 @@ ALTER TABLE ONLY inventory
 
 ALTER TABLE ONLY language
     ADD CONSTRAINT language_pkey PRIMARY KEY (language_id);
-
-
---
--- Name: payment payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_pkey PRIMARY KEY (payment_id);
 
 
 --
@@ -1424,13 +1150,6 @@ CREATE INDEX idx_fk_city_id ON address USING btree (city_id);
 --
 
 CREATE INDEX idx_fk_country_id ON city USING btree (country_id);
-
-
---
--- Name: idx_fk_customer_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fk_customer_id ON payment USING btree (customer_id);
 
 
 --
@@ -1546,13 +1265,6 @@ CREATE INDEX idx_fk_payment_p2007_06_staff_id ON payment_p2007_06 USING btree (s
 
 
 --
--- Name: idx_fk_staff_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fk_staff_id ON payment USING btree (staff_id);
-
-
---
 -- Name: idx_fk_store_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1592,66 +1304,6 @@ CREATE UNIQUE INDEX idx_unq_manager_staff_id ON store USING btree (manager_staff
 --
 
 CREATE UNIQUE INDEX idx_unq_rental_rental_date_inventory_id_customer_id ON rental USING btree (rental_date, inventory_id, customer_id);
-
-
---
--- Name: payment payment_insert_p2007_01; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2007_01 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2007-01-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2007-02-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2007_01 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2007_02; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2007_02 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2007-02-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2007-03-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2007_02 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2007_03; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2007_03 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2007-03-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2007-04-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2007_03 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2007_04; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2007_04 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2007-04-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2007-05-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2007_04 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2007_05; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2007_05 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2007-05-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2007-06-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2007_05 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
-
-
---
--- Name: payment payment_insert_p2007_06; Type: RULE; Schema: public; Owner: postgres
---
-
-CREATE RULE payment_insert_p2007_06 AS
-    ON INSERT TO payment
-   WHERE ((new.payment_date >= '2007-06-01 00:00:00'::timestamp without time zone) AND (new.payment_date < '2007-07-01 00:00:00'::timestamp without time zone)) DO INSTEAD  INSERT INTO payment_p2007_06 (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
-  VALUES (DEFAULT, new.customer_id, new.staff_id, new.rental_id, new.amount, new.payment_date);
 
 
 --
@@ -1856,14 +1508,6 @@ ALTER TABLE ONLY inventory
 
 
 --
--- Name: payment payment_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
 -- Name: payment_p2007_01 payment_p2007_01_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2005,22 +1649,6 @@ ALTER TABLE ONLY payment_p2007_06
 
 ALTER TABLE ONLY payment_p2007_06
     ADD CONSTRAINT payment_p2007_06_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id);
-
-
---
--- Name: payment payment_rental_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_rental_id_fkey FOREIGN KEY (rental_id) REFERENCES rental(rental_id) ON UPDATE CASCADE ON DELETE SET NULL;
-
-
---
--- Name: payment payment_staff_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY payment
-    ADD CONSTRAINT payment_staff_id_fkey FOREIGN KEY (staff_id) REFERENCES staff(staff_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
