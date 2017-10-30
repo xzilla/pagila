@@ -733,7 +733,7 @@ CREATE TABLE payment (
     staff_id smallint NOT NULL,
     rental_id integer NOT NULL,
     amount numeric(5,2) NOT NULL,
-    payment_date timestamp with time zone NOT NULL
+    payment_date timestamp without time zone NOT NULL
 )
 PARTITION BY RANGE (payment_date);
 
@@ -745,7 +745,7 @@ ALTER TABLE payment OWNER TO postgres;
 --
 
 CREATE TABLE payment_p2007_01 PARTITION OF payment
-FOR VALUES FROM ('2007-01-01 00:00:00-08') TO ('2007-02-01 00:00:00-08');
+FOR VALUES FROM ('2007-01-01 00:00:00') TO ('2007-02-01 00:00:00');
 
 
 ALTER TABLE payment_p2007_01 OWNER TO postgres;
@@ -755,7 +755,7 @@ ALTER TABLE payment_p2007_01 OWNER TO postgres;
 --
 
 CREATE TABLE payment_p2007_02 PARTITION OF payment
-FOR VALUES FROM ('2007-02-01 00:00:00-08') TO ('2007-03-01 00:00:00-08');
+FOR VALUES FROM ('2007-02-01 00:00:00') TO ('2007-03-01 00:00:00');
 
 
 ALTER TABLE payment_p2007_02 OWNER TO postgres;
@@ -765,7 +765,7 @@ ALTER TABLE payment_p2007_02 OWNER TO postgres;
 --
 
 CREATE TABLE payment_p2007_03 PARTITION OF payment
-FOR VALUES FROM ('2007-03-01 00:00:00-08') TO ('2007-04-01 00:00:00-07');
+FOR VALUES FROM ('2007-03-01 00:00:00') TO ('2007-04-01 00:00:00');
 
 
 ALTER TABLE payment_p2007_03 OWNER TO postgres;
@@ -775,7 +775,7 @@ ALTER TABLE payment_p2007_03 OWNER TO postgres;
 --
 
 CREATE TABLE payment_p2007_04 PARTITION OF payment
-FOR VALUES FROM ('2007-04-01 00:00:00-07') TO ('2007-05-01 00:00:00-07');
+FOR VALUES FROM ('2007-04-01 00:00:00') TO ('2007-05-01 00:00:00');
 
 
 ALTER TABLE payment_p2007_04 OWNER TO postgres;
@@ -785,7 +785,7 @@ ALTER TABLE payment_p2007_04 OWNER TO postgres;
 --
 
 CREATE TABLE payment_p2007_05 PARTITION OF payment
-FOR VALUES FROM ('2007-05-01 00:00:00-07') TO ('2007-06-01 00:00:00-07');
+FOR VALUES FROM ('2007-05-01 00:00:00') TO ('2007-06-01 00:00:00');
 
 
 ALTER TABLE payment_p2007_05 OWNER TO postgres;
@@ -795,7 +795,7 @@ ALTER TABLE payment_p2007_05 OWNER TO postgres;
 --
 
 CREATE TABLE payment_p2007_06 PARTITION OF payment
-FOR VALUES FROM ('2007-06-01 00:00:00-07') TO ('2007-07-01 00:00:00-07');
+FOR VALUES FROM ('2007-06-01 00:00:00') TO ('2007-07-01 00:00:00');
 
 
 ALTER TABLE payment_p2007_06 OWNER TO postgres;
