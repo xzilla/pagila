@@ -16,7 +16,7 @@ trouble using one version or another.
 PARTITIONED TABLES
 ------------------
 
-The payment table is designed as a partitioned table with a 6 month timespan for the date ranges. If you want to take full advantage of table partitioning, you need to make sure constraint_exclusion is turned on in your database. You can do this by setting "constraint_exclusion = on" in your postgresql.conf, or by issuing the command "ALTER DATABASE pagila SET constraint_exclusion = on" (substitute pagila for your database name if installing into a database with a different name). Note, constraint_exclusion should be on by default in modern postgres releases.  
+The payment table is designed as a partitioned table with a 6 month timespan for the date range. In order to take full advantage of table partitioning, you need to make sure constraint_exclusion is set to either 'partition' (the default) or 'on' in your database. You can do this by setting "constraint_exclusion = partition" in your postgresql.conf, or by issuing the command "ALTER DATABASE pagila SET constraint_exclusion = partition" (substitute pagila for your database name if installing into a database with a different name). Note, constraint_exclusion should be on by default in modern postgres releases.  
 
 
 ARTICLES
@@ -64,7 +64,7 @@ LICENSE
 -------
 Pagila is made available under The PostgreSQL License (https://opensource.org/licenses/PostgreSQL)
 
-Note: Version of Pagila prior to and including 0.10.1 were also made available under the same BSD license as Sakila. 
+Note: Versions of Pagila prior to and including 0.10.1 were also made available under the same BSD license as Sakila. 
 
 
 VERSION HISTORY
@@ -72,6 +72,7 @@ VERSION HISTORY
 
 Version 10.a 
 * Rebuild payments table using native partitioning 
+* Add function, rule, triggers for handling updates to partitoned payments table
 * Fix numerous bugs with inserts data file   
 
 Version 9.6.a
