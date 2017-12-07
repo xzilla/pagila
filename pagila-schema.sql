@@ -2,6 +2,9 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 10.1
+-- Dumped by pg_dump version 10.1
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -239,6 +242,55 @@ END $$;
 
 
 ALTER FUNCTION public.last_updated() OWNER TO postgres;
+
+--
+-- Name: payment_date_update_handler(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION payment_date_update_handler() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+BEGIN
+    DELETE FROM payment WHERE payment_id = OLD.payment_id;
+    INSERT INTO payment VALUES (NEW.payment_id, NEW.customer_id, NEW.staff_id, NEW.rental_id, NEW.amount, NEW.payment_date);
+
+    RETURN null;
+END
+$$;
+
+
+ALTER FUNCTION public.payment_date_update_handler() OWNER TO postgres;
+
+--
+-- Name: payment_id_change_handler(integer, integer, smallint, smallint, integer, numeric, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION payment_id_change_handler(old_payment_id integer, new_payment_id integer, new_customer_id smallint, new_staff_id smallint, new_rental_id integer, new_amount numeric, new_payment_date timestamp with time zone) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_devnull int;
+BEGIN
+    SELECT 1 FROM payment WHERE payment_id = new_payment_id INTO v_devnull;
+    IF FOUND THEN
+        RAISE USING
+            ERRCODE = '23505',
+            MESSAGE = 'duplicate key violation',
+            DETAIL = 'Key (payment_id)=('||new_payment_id||') already exists.';
+    END IF;
+
+    DELETE FROM payment WHERE payment_id = old_payment_id;
+
+    INSERT INTO payment (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+        VALUES (new_payment_id, new_customer_id, new_staff_id, new_rental_id, new_amount, new_payment_date);
+
+    RETURN;
+END
+$$;
+
+
+ALTER FUNCTION public.payment_id_change_handler(old_payment_id integer, new_payment_id integer, new_customer_id smallint, new_staff_id smallint, new_rental_id integer, new_amount numeric, new_payment_date timestamp with time zone) OWNER TO postgres;
 
 --
 -- Name: customer_customer_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1307,6 +1359,15 @@ CREATE UNIQUE INDEX idx_unq_rental_rental_date_inventory_id_customer_id ON renta
 
 
 --
+-- Name: payment payment_pk_update; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE payment_pk_update AS
+    ON UPDATE TO payment
+   WHERE (new.payment_id <> old.payment_id) DO INSTEAD  SELECT payment_id_change_handler(old.payment_id, new.payment_id, new.customer_id, new.staff_id, new.rental_id, new.amount, (new.payment_date)::timestamp with time zone) AS payment_id_change_handler;
+
+
+--
 -- Name: film film_fulltext_trigger; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1409,6 +1470,48 @@ CREATE TRIGGER last_updated BEFORE UPDATE ON staff FOR EACH ROW EXECUTE PROCEDUR
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON store FOR EACH ROW EXECUTE PROCEDURE last_updated();
+
+
+--
+-- Name: payment_p2007_01 update_payment_date_p2007_01; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_payment_date_p2007_01 BEFORE UPDATE ON payment_p2007_01 FOR EACH ROW WHEN (((new.payment_date < '2007-01-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-02-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE payment_date_update_handler();
+
+
+--
+-- Name: payment_p2007_02 update_payment_date_p2007_02; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_payment_date_p2007_02 BEFORE UPDATE ON payment_p2007_02 FOR EACH ROW WHEN (((new.payment_date < '2007-02-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-03-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE payment_date_update_handler();
+
+
+--
+-- Name: payment_p2007_03 update_payment_date_p2007_03; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_payment_date_p2007_03 BEFORE UPDATE ON payment_p2007_03 FOR EACH ROW WHEN (((new.payment_date < '2007-03-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-04-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE payment_date_update_handler();
+
+
+--
+-- Name: payment_p2007_04 update_payment_date_p2007_04; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_payment_date_p2007_04 BEFORE UPDATE ON payment_p2007_04 FOR EACH ROW WHEN (((new.payment_date < '2007-04-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-05-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE payment_date_update_handler();
+
+
+--
+-- Name: payment_p2007_05 update_payment_date_p2007_05; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_payment_date_p2007_05 BEFORE UPDATE ON payment_p2007_05 FOR EACH ROW WHEN (((new.payment_date < '2007-05-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-06-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE payment_date_update_handler();
+
+
+--
+-- Name: payment_p2007_06 update_payment_date_p2007_06; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_payment_date_p2007_06 BEFORE UPDATE ON payment_p2007_06 FOR EACH ROW WHEN (((new.payment_date < '2007-06-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-07-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE payment_date_update_handler();
 
 
 --
