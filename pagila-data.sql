@@ -2,19 +2,19 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10beta4
--- Dumped by pg_dump version 10beta4
+-- Dumped from database version 11.3
+-- Dumped by pg_dump version 11.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'SQL_ASCII';
+SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
-SET search_path = public, pg_catalog;
 
 --
 -- Data for Name: actor; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -22,9 +22,9 @@ SET search_path = public, pg_catalog;
 
 SET SESSION AUTHORIZATION DEFAULT;
 
-ALTER TABLE actor DISABLE TRIGGER ALL;
+ALTER TABLE public.actor DISABLE TRIGGER ALL;
 
-COPY actor (actor_id, first_name, last_name, last_update) FROM stdin;
+COPY public.actor (actor_id, first_name, last_name, last_update) FROM stdin;
 1	PENELOPE	GUINESS	2006-02-15 09:34:33
 2	NICK	WAHLBERG	2006-02-15 09:34:33
 3	ED	CHASE	2006-02-15 09:34:33
@@ -228,15 +228,15 @@ COPY actor (actor_id, first_name, last_name, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE actor ENABLE TRIGGER ALL;
+ALTER TABLE public.actor ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: country; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE country DISABLE TRIGGER ALL;
+ALTER TABLE public.country DISABLE TRIGGER ALL;
 
-COPY country (country_id, country, last_update) FROM stdin;
+COPY public.country (country_id, country, last_update) FROM stdin;
 1	Afghanistan	2006-02-15 09:44:00
 2	Algeria	2006-02-15 09:44:00
 3	American Samoa	2006-02-15 09:44:00
@@ -349,15 +349,15 @@ COPY country (country_id, country, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE country ENABLE TRIGGER ALL;
+ALTER TABLE public.country ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: city; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE city DISABLE TRIGGER ALL;
+ALTER TABLE public.city DISABLE TRIGGER ALL;
 
-COPY city (city_id, city, country_id, last_update) FROM stdin;
+COPY public.city (city_id, city, country_id, last_update) FROM stdin;
 1	A Corua (La Corua)	87	2006-02-15 09:45:25
 2	Abha	82	2006-02-15 09:45:25
 3	Abu Dhabi	101	2006-02-15 09:45:25
@@ -961,15 +961,15 @@ COPY city (city_id, city, country_id, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE city ENABLE TRIGGER ALL;
+ALTER TABLE public.city ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE address DISABLE TRIGGER ALL;
+ALTER TABLE public.address DISABLE TRIGGER ALL;
 
-COPY address (address_id, address, address2, district, city_id, postal_code, phone, last_update) FROM stdin;
+COPY public.address (address_id, address, address2, district, city_id, postal_code, phone, last_update) FROM stdin;
 1	47 MySakila Drive	\N	Alberta	300			2006-02-15 09:45:30
 2	28 MySQL Boulevard	\N	QLD	576			2006-02-15 09:45:30
 3	23 Workhaven Lane	\N	Alberta	300		14033335568	2006-02-15 09:45:30
@@ -1576,15 +1576,15 @@ COPY address (address_id, address, address2, district, city_id, postal_code, pho
 \.
 
 
-ALTER TABLE address ENABLE TRIGGER ALL;
+ALTER TABLE public.address ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE category DISABLE TRIGGER ALL;
+ALTER TABLE public.category DISABLE TRIGGER ALL;
 
-COPY category (category_id, name, last_update) FROM stdin;
+COPY public.category (category_id, name, last_update) FROM stdin;
 1	Action	2006-02-15 09:46:27
 2	Animation	2006-02-15 09:46:27
 3	Children	2006-02-15 09:46:27
@@ -1604,43 +1604,43 @@ COPY category (category_id, name, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE category ENABLE TRIGGER ALL;
+ALTER TABLE public.category ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: staff; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE staff DISABLE TRIGGER ALL;
+ALTER TABLE public.staff DISABLE TRIGGER ALL;
 
-COPY staff (staff_id, first_name, last_name, address_id, email, store_id, active, username, password, last_update, picture) FROM stdin;
+COPY public.staff (staff_id, first_name, last_name, address_id, email, store_id, active, username, password, last_update, picture) FROM stdin;
 1	Mike	Hillyer	3	Mike.Hillyer@sakilastaff.com	1	t	Mike	8cb2237d0679ca88db6464eac60da96345513964	2006-05-16 16:13:11.79328	\\x89504e470d0a5a0a
 2	Jon	Stephens	4	Jon.Stephens@sakilastaff.com	2	t	Jon	8cb2237d0679ca88db6464eac60da96345513964	2006-05-16 16:13:11.79328	\N
 \.
 
 
-ALTER TABLE staff ENABLE TRIGGER ALL;
+ALTER TABLE public.staff ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: store; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE store DISABLE TRIGGER ALL;
+ALTER TABLE public.store DISABLE TRIGGER ALL;
 
-COPY store (store_id, manager_staff_id, address_id, last_update) FROM stdin;
+COPY public.store (store_id, manager_staff_id, address_id, last_update) FROM stdin;
 1	1	1	2006-02-15 09:57:12
 2	2	2	2006-02-15 09:57:12
 \.
 
 
-ALTER TABLE store ENABLE TRIGGER ALL;
+ALTER TABLE public.store ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: customer; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE customer DISABLE TRIGGER ALL;
+ALTER TABLE public.customer DISABLE TRIGGER ALL;
 
-COPY customer (customer_id, store_id, first_name, last_name, email, address_id, activebool, create_date, last_update, active) FROM stdin;
+COPY public.customer (customer_id, store_id, first_name, last_name, email, address_id, activebool, create_date, last_update, active) FROM stdin;
 1	1	MARY	SMITH	MARY.SMITH@sakilacustomer.org	5	t	2006-02-14	2006-02-15 09:57:20	1
 2	1	PATRICIA	JOHNSON	PATRICIA.JOHNSON@sakilacustomer.org	6	t	2006-02-14	2006-02-15 09:57:20	1
 3	1	LINDA	WILLIAMS	LINDA.WILLIAMS@sakilacustomer.org	7	t	2006-02-14	2006-02-15 09:57:20	1
@@ -2243,15 +2243,15 @@ COPY customer (customer_id, store_id, first_name, last_name, email, address_id, 
 \.
 
 
-ALTER TABLE customer ENABLE TRIGGER ALL;
+ALTER TABLE public.customer ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: language; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE language DISABLE TRIGGER ALL;
+ALTER TABLE public.language DISABLE TRIGGER ALL;
 
-COPY language (language_id, name, last_update) FROM stdin;
+COPY public.language (language_id, name, last_update) FROM stdin;
 1	English             	2006-02-15 10:02:19
 2	Italian             	2006-02-15 10:02:19
 3	Japanese            	2006-02-15 10:02:19
@@ -2261,15 +2261,15 @@ COPY language (language_id, name, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE language ENABLE TRIGGER ALL;
+ALTER TABLE public.language ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: film; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE film DISABLE TRIGGER ALL;
+ALTER TABLE public.film DISABLE TRIGGER ALL;
 
-COPY film (film_id, title, description, release_year, language_id, original_language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext) FROM stdin;
+COPY public.film (film_id, title, description, release_year, language_id, original_language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext) FROM stdin;
 1	ACADEMY DINOSAUR	A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies	2006	1	\N	6	0.99	86	20.99	PG	2007-09-10 17:46:03.905795	{"Deleted Scenes","Behind the Scenes"}	'academi':1 'battl':15 'canadian':20 'dinosaur':2 'drama':5 'epic':4 'feminist':8 'mad':11 'must':14 'rocki':21 'scientist':12 'teacher':17
 2	ACE GOLDFINGER	A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China	2006	1	\N	3	4.99	48	12.99	G	2007-09-10 17:46:03.905795	{Trailers,"Deleted Scenes"}	'ace':1 'administr':9 'ancient':19 'astound':4 'car':17 'china':20 'databas':8 'epistl':5 'explor':12 'find':15 'goldfing':2 'must':14
 3	ADAPTATION HOLES	A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory	2006	1	\N	7	2.99	50	18.99	NC-17	2007-09-10 17:46:03.905795	{Trailers,"Deleted Scenes"}	'adapt':1 'astound':4 'baloon':19 'car':11 'factori':20 'hole':2 'lumberjack':8,16 'must':13 'reflect':5 'sink':14
@@ -3273,15 +3273,15 @@ COPY film (film_id, title, description, release_year, language_id, original_lang
 \.
 
 
-ALTER TABLE film ENABLE TRIGGER ALL;
+ALTER TABLE public.film ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: film_actor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE film_actor DISABLE TRIGGER ALL;
+ALTER TABLE public.film_actor DISABLE TRIGGER ALL;
 
-COPY film_actor (actor_id, film_id, last_update) FROM stdin;
+COPY public.film_actor (actor_id, film_id, last_update) FROM stdin;
 1	1	2006-02-15 10:05:03
 1	23	2006-02-15 10:05:03
 1	25	2006-02-15 10:05:03
@@ -8747,15 +8747,15 @@ COPY film_actor (actor_id, film_id, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE film_actor ENABLE TRIGGER ALL;
+ALTER TABLE public.film_actor ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: film_category; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE film_category DISABLE TRIGGER ALL;
+ALTER TABLE public.film_category DISABLE TRIGGER ALL;
 
-COPY film_category (film_id, category_id, last_update) FROM stdin;
+COPY public.film_category (film_id, category_id, last_update) FROM stdin;
 1	6	2006-02-15 10:07:09
 2	11	2006-02-15 10:07:09
 3	6	2006-02-15 10:07:09
@@ -9759,15 +9759,15 @@ COPY film_category (film_id, category_id, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE film_category ENABLE TRIGGER ALL;
+ALTER TABLE public.film_category ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: inventory; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE inventory DISABLE TRIGGER ALL;
+ALTER TABLE public.inventory DISABLE TRIGGER ALL;
 
-COPY inventory (inventory_id, film_id, store_id, last_update) FROM stdin;
+COPY public.inventory (inventory_id, film_id, store_id, last_update) FROM stdin;
 1	1	1	2006-02-15 10:09:17
 2	1	1	2006-02-15 10:09:17
 3	1	1	2006-02-15 10:09:17
@@ -14352,15 +14352,15 @@ COPY inventory (inventory_id, film_id, store_id, last_update) FROM stdin;
 \.
 
 
-ALTER TABLE inventory ENABLE TRIGGER ALL;
+ALTER TABLE public.inventory ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: rental; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE rental DISABLE TRIGGER ALL;
+ALTER TABLE public.rental DISABLE TRIGGER ALL;
 
-COPY rental (rental_id, rental_date, inventory_id, customer_id, return_date, staff_id, last_update) FROM stdin;
+COPY public.rental (rental_id, rental_date, inventory_id, customer_id, return_date, staff_id, last_update) FROM stdin;
 2	2005-05-24 22:54:33	1525	459	2005-05-28 19:40:33	1	2006-02-16 02:30:53
 3	2005-05-24 23:03:39	1711	408	2005-06-01 22:12:39	1	2006-02-16 02:30:53
 4	2005-05-24 23:04:41	2452	333	2005-06-03 01:43:41	2	2006-02-16 02:30:53
@@ -30408,15 +30408,15 @@ COPY rental (rental_id, rental_date, inventory_id, customer_id, return_date, sta
 \.
 
 
-ALTER TABLE rental ENABLE TRIGGER ALL;
+ALTER TABLE public.rental ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: payment_p2007_01; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE payment_p2007_01 DISABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_01 DISABLE TRIGGER ALL;
 
-COPY payment_p2007_01 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
+COPY public.payment_p2007_01 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 16050	269	2	7	1.99	2007-01-24 21:40:19.996577
 16051	269	1	98	0.99	2007-01-25 15:16:50.996577
 16052	269	2	678	6.99	2007-01-28 21:44:14.996577
@@ -31577,15 +31577,15 @@ COPY payment_p2007_01 (payment_id, customer_id, staff_id, rental_id, amount, pay
 \.
 
 
-ALTER TABLE payment_p2007_01 ENABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_01 ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: payment_p2007_02; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE payment_p2007_02 DISABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_02 DISABLE TRIGGER ALL;
 
-COPY payment_p2007_02 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
+COPY public.payment_p2007_02 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 17207	268	1	1394	2.99	2007-02-15 14:45:47.996577
 17208	268	2	1450	4.99	2007-02-15 17:50:34.996577
 17209	268	2	1551	3.99	2007-02-16 00:29:41.996577
@@ -33901,15 +33901,15 @@ COPY payment_p2007_02 (payment_id, customer_id, staff_id, rental_id, amount, pay
 \.
 
 
-ALTER TABLE payment_p2007_02 ENABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_02 ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: payment_p2007_03; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE payment_p2007_03 DISABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_03 DISABLE TRIGGER ALL;
 
-COPY payment_p2007_03 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
+COPY public.payment_p2007_03 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 19519	267	1	10343	2.99	2007-03-01 03:44:13.996577
 19520	267	2	11373	0.99	2007-03-02 16:42:38.996577
 19521	267	1	11690	6.99	2007-03-17 05:12:48.996577
@@ -39557,15 +39557,15 @@ COPY payment_p2007_03 (payment_id, customer_id, staff_id, rental_id, amount, pay
 \.
 
 
-ALTER TABLE payment_p2007_03 ENABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_03 ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: payment_p2007_04; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE payment_p2007_04 DISABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_04 DISABLE TRIGGER ALL;
 
-COPY payment_p2007_04 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
+COPY public.payment_p2007_04 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 25163	267	2	9807	2.99	2007-04-30 09:42:18.996577
 25164	267	2	10048	4.99	2007-04-30 17:37:22.996577
 25165	268	2	3670	4.99	2007-04-06 07:25:09.996577
@@ -46323,15 +46323,15 @@ COPY payment_p2007_04 (payment_id, customer_id, staff_id, rental_id, amount, pay
 \.
 
 
-ALTER TABLE payment_p2007_04 ENABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_04 ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: payment_p2007_05; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE payment_p2007_05 DISABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_05 DISABLE TRIGGER ALL;
 
-COPY payment_p2007_05 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
+COPY public.payment_p2007_05 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 31917	267	2	12066	7.98	2007-05-14 13:44:29.996577
 31918	267	2	13713	0.00	2007-05-14 13:44:29.996577
 31919	269	1	13025	3.98	2007-05-14 13:44:29.996577
@@ -46517,109 +46517,109 @@ COPY payment_p2007_05 (payment_id, customer_id, staff_id, rental_id, amount, pay
 \.
 
 
-ALTER TABLE payment_p2007_05 ENABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_05 ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: payment_p2007_06; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE payment_p2007_06 DISABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_06 DISABLE TRIGGER ALL;
 
-COPY payment_p2007_06 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
+COPY public.payment_p2007_06 (payment_id, customer_id, staff_id, rental_id, amount, payment_date) FROM stdin;
 \.
 
 
-ALTER TABLE payment_p2007_06 ENABLE TRIGGER ALL;
+ALTER TABLE public.payment_p2007_06 ENABLE TRIGGER ALL;
 
 --
 -- Name: actor_actor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('actor_actor_id_seq', 200, true);
+SELECT pg_catalog.setval('public.actor_actor_id_seq', 200, true);
 
 
 --
 -- Name: address_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('address_address_id_seq', 605, true);
+SELECT pg_catalog.setval('public.address_address_id_seq', 605, true);
 
 
 --
 -- Name: category_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('category_category_id_seq', 16, true);
+SELECT pg_catalog.setval('public.category_category_id_seq', 16, true);
 
 
 --
 -- Name: city_city_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('city_city_id_seq', 600, true);
+SELECT pg_catalog.setval('public.city_city_id_seq', 600, true);
 
 
 --
 -- Name: country_country_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('country_country_id_seq', 109, true);
+SELECT pg_catalog.setval('public.country_country_id_seq', 109, true);
 
 
 --
 -- Name: customer_customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('customer_customer_id_seq', 599, true);
+SELECT pg_catalog.setval('public.customer_customer_id_seq', 599, true);
 
 
 --
 -- Name: film_film_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('film_film_id_seq', 1000, true);
+SELECT pg_catalog.setval('public.film_film_id_seq', 1000, true);
 
 
 --
 -- Name: inventory_inventory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('inventory_inventory_id_seq', 4581, true);
+SELECT pg_catalog.setval('public.inventory_inventory_id_seq', 4581, true);
 
 
 --
 -- Name: language_language_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('language_language_id_seq', 6, true);
+SELECT pg_catalog.setval('public.language_language_id_seq', 6, true);
 
 
 --
 -- Name: payment_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('payment_payment_id_seq', 32098, true);
+SELECT pg_catalog.setval('public.payment_payment_id_seq', 32098, true);
 
 
 --
 -- Name: rental_rental_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('rental_rental_id_seq', 16049, true);
+SELECT pg_catalog.setval('public.rental_rental_id_seq', 16049, true);
 
 
 --
 -- Name: staff_staff_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('staff_staff_id_seq', 2, true);
+SELECT pg_catalog.setval('public.staff_staff_id_seq', 2, true);
 
 
 --
 -- Name: store_store_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('store_store_id_seq', 2, true);
+SELECT pg_catalog.setval('public.store_store_id_seq', 2, true);
 
 
 --
