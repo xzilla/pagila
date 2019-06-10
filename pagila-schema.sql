@@ -279,73 +279,36 @@ $$;
 ALTER FUNCTION public.payment_id_change_handler(old_payment_id integer, new_payment_id integer, new_customer_id smallint, new_staff_id smallint, new_rental_id integer, new_amount numeric, new_payment_date timestamp with time zone) OWNER TO postgres;
 
 --
--- Name: customer_customer_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: rewards_report(integer, numeric, date, refcursor, refcursor); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.customer_customer_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.customer_customer_id_seq OWNER TO postgres;
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-
---
--- Name: customer; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.customer (
-    customer_id integer DEFAULT nextval('public.customer_customer_id_seq'::regclass) NOT NULL,
-    store_id smallint NOT NULL,
-    first_name character varying(45) NOT NULL,
-    last_name character varying(45) NOT NULL,
-    email character varying(50),
-    address_id smallint NOT NULL,
-    activebool boolean DEFAULT true NOT NULL,
-    create_date date DEFAULT ('now'::text)::date NOT NULL,
-    last_update timestamp without time zone DEFAULT now(),
-    active integer
-);
-
-
-ALTER TABLE public.customer OWNER TO postgres;
-
---
--- Name: rewards_report(integer, numeric); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric) RETURNS SETOF public.customer
+CREATE PROCEDURE public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric, report_month date DEFAULT CURRENT_DATE, INOUT refcur_client refcursor DEFAULT 'rewardees_detail'::refcursor, INOUT refcur_count refcursor DEFAULT 'rewardees_count'::refcursor)
     LANGUAGE plpgsql SECURITY DEFINER
     AS $_$
 DECLARE
     last_month_start DATE;
     last_month_end DATE;
-rr RECORD;
-tmpSQL TEXT;
+    rewards_count INTEGER; 
+    tmpSQL TEXT;
 BEGIN
 
     /* Some sanity checks... */
-    IF min_monthly_purchases = 0 THEN
+    IF min_monthly_purchases <= 0 THEN
         RAISE EXCEPTION 'Minimum monthly purchases parameter must be > 0';
     END IF;
-    IF min_dollar_amount_purchased = 0.00 THEN
+    IF min_dollar_amount_purchased <= 0.00 THEN
         RAISE EXCEPTION 'Minimum monthly dollar amount purchased parameter must be > $0.00';
     END IF;
 
-    last_month_start := CURRENT_DATE - '3 month'::interval;
-    last_month_start := to_date((extract(YEAR FROM last_month_start) || '-' || extract(MONTH FROM last_month_start) || '-01'),'YYYY-MM-DD');
+    last_month_start := to_date((extract(YEAR FROM report_month) || '-' || extract(MONTH FROM report_month) || '-01'),'YYYY-MM-DD');
     last_month_end := LAST_DAY(last_month_start);
+
+    --DEBUG RAISE NOTICE '% - %', last_month_start, last_month_end; 
 
     /*
     Create a temporary storage area for Customer IDs.
     */
-    CREATE TEMPORARY TABLE tmpCustomer (customer_id INTEGER NOT NULL PRIMARY KEY);
+    CREATE TEMPORARY TABLE tmpCustomer (customer_id INTEGER NOT NULL PRIMARY KEY) ON COMMIT DROP;
 
     /*
     Find all customers meeting the monthly purchase requirements
@@ -359,26 +322,29 @@ BEGIN
         HAVING SUM(p.amount) > '|| min_dollar_amount_purchased || '
         AND COUNT(customer_id) > ' ||min_monthly_purchases ;
 
+    --DEBUG RAISE NOTICE '%', tmpSQL; 
     EXECUTE tmpSQL;
 
     /*
     Output ALL customer information of matching rewardees.
     Customize output as needed.
     */
-    FOR rr IN EXECUTE 'SELECT c.* FROM tmpCustomer AS t INNER JOIN customer AS c ON t.customer_id = c.customer_id' LOOP
-        RETURN NEXT rr;
-    END LOOP;
+    OPEN refcur_client FOR SELECT c.* FROM tmpCustomer AS t INNER JOIN customer AS c ON t.customer_id = c.customer_id;
 
-    /* Clean up */
-    tmpSQL := 'DROP TABLE tmpCustomer';
-    EXECUTE tmpSQL;
+    GET DIAGNOSTICS rewards_count := ROW_COUNT;
+    OPEN refcur_count FOR SELECT rewards_count; 
+
+    /*
+    Note: Due to use of cursors, we must use this procedure within a transaction to retrieve the cursor results. As an example: 
+    begin; call rewards_report(5,25,'2007-01-01'::date); fetch all in rewardees_count; fetch all in rewardees_detail; commit;
+    */ 
 
 RETURN;
 END
 $_$;
 
 
-ALTER FUNCTION public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric) OWNER TO postgres;
+ALTER PROCEDURE public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric, report_month date, INOUT refcur_client refcursor, INOUT refcur_count refcursor) OWNER TO postgres;
 
 --
 -- Name: group_concat(text); Type: AGGREGATE; Schema: public; Owner: postgres
@@ -405,6 +371,10 @@ CREATE SEQUENCE public.actor_actor_id_seq
 
 
 ALTER TABLE public.actor_actor_id_seq OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
 
 --
 -- Name: actor; Type: TABLE; Schema: public; Owner: postgres
@@ -620,6 +590,40 @@ CREATE TABLE public.country (
 
 
 ALTER TABLE public.country OWNER TO postgres;
+
+--
+-- Name: customer_customer_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.customer_customer_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.customer_customer_id_seq OWNER TO postgres;
+
+--
+-- Name: customer; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.customer (
+    customer_id integer DEFAULT nextval('public.customer_customer_id_seq'::regclass) NOT NULL,
+    store_id smallint NOT NULL,
+    first_name character varying(45) NOT NULL,
+    last_name character varying(45) NOT NULL,
+    email character varying(50),
+    address_id smallint NOT NULL,
+    activebool boolean DEFAULT true NOT NULL,
+    create_date date DEFAULT ('now'::text)::date NOT NULL,
+    last_update timestamp without time zone DEFAULT now(),
+    active integer
+);
+
+
+ALTER TABLE public.customer OWNER TO postgres;
 
 --
 -- Name: customer_list; Type: VIEW; Schema: public; Owner: postgres
