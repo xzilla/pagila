@@ -981,11 +981,11 @@ ALTER TABLE ONLY public.payment_p2007_06 ALTER COLUMN payment_id SET DEFAULT nex
 
 
 --
--- Name: actor actor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: actor actor_pkey_incl; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.actor
-    ADD CONSTRAINT actor_pkey PRIMARY KEY (actor_id);
+    ADD CONSTRAINT actor_pkey_incl PRIMARY KEY (actor_id) INCLUDE (first_name, last_name);
 
 
 --
