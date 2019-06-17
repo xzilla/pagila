@@ -1,7 +1,7 @@
 Pagila
 ======
 
-Pagila is a port of the Sakila example database originally created for MySQL by Mike Hillyer of the MySQL AB documentation team. It is intended to provide a standard schema that can be used for examples in books, tutorials, articles, samples, etc...  
+Pagila is a port of the Sakila example database originally created for MySQL by Mike Hillyer of the MySQL AB documentation team. It is intended to provide a standard schema that can be used for examples in books, tutorials, articles, samples, etc... It is currently maintained via github at https://github.com/xzilla/pagila.  
 
 
 INSTALL NOTE
@@ -56,7 +56,7 @@ For those interested in the original porting information, all tables, data, view
 * Added foreign keys
 * Removed 'DEFAULT 0' on foreign keys since it's pointless with real FK's
 * Used PostgreSQL built-in fulltext searching for fulltext indexing, removing the need for the film_text table.  
-* The rewards_report function was ported to a simple SRF
+* In the original port, the rewards_report function was ported to a simple SRF. It is now a stored procedure that returns multiple cursor references. 
 
 The schema and data for the Sakila database were made available under the BSD license which can be found at http://www.opensource.org/licenses/bsd-license.php. 
 
@@ -69,6 +69,13 @@ Note: Versions of Pagila prior to and including 0.10.1 were also made available 
 
 VERSION HISTORY
 ---------------
+
+Version 11.a
+* Re-dump schema and data using newer pg_dump. This forces schema qualification of all objects within the database 
+* Convert reward_report from set-returning function to refcusor based stored procedure 
+* Drop obsolete payment date handler and supporting triggers
+* Add covering columns to actor primary key index 
+* Rewrite staff_list view using JOIN ... USING syntax 
 
 Version 10.a 
 * Rebuild payments table using native partitioning 
