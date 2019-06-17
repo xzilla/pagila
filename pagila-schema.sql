@@ -230,25 +230,6 @@ END $$;
 ALTER FUNCTION public.last_updated() OWNER TO postgres;
 
 --
--- Name: payment_date_update_handler(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.payment_date_update_handler() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-BEGIN
-    DELETE FROM payment WHERE payment_id = OLD.payment_id;
-    INSERT INTO payment VALUES (NEW.payment_id, NEW.customer_id, NEW.staff_id, NEW.rental_id, NEW.amount, NEW.payment_date);
-
-    RETURN null;
-END
-$$;
-
-
-ALTER FUNCTION public.payment_date_update_handler() OWNER TO postgres;
-
---
 -- Name: payment_id_change_handler(integer, integer, smallint, smallint, integer, numeric, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1460,48 +1441,6 @@ CREATE TRIGGER last_updated BEFORE UPDATE ON public.staff FOR EACH ROW EXECUTE P
 --
 
 CREATE TRIGGER last_updated BEFORE UPDATE ON public.store FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
-
-
---
--- Name: payment_p2007_01 update_payment_date_p2007_01; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER update_payment_date_p2007_01 BEFORE UPDATE ON public.payment_p2007_01 FOR EACH ROW WHEN (((new.payment_date < '2007-01-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-02-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE public.payment_date_update_handler();
-
-
---
--- Name: payment_p2007_02 update_payment_date_p2007_02; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER update_payment_date_p2007_02 BEFORE UPDATE ON public.payment_p2007_02 FOR EACH ROW WHEN (((new.payment_date < '2007-02-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-03-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE public.payment_date_update_handler();
-
-
---
--- Name: payment_p2007_03 update_payment_date_p2007_03; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER update_payment_date_p2007_03 BEFORE UPDATE ON public.payment_p2007_03 FOR EACH ROW WHEN (((new.payment_date < '2007-03-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-04-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE public.payment_date_update_handler();
-
-
---
--- Name: payment_p2007_04 update_payment_date_p2007_04; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER update_payment_date_p2007_04 BEFORE UPDATE ON public.payment_p2007_04 FOR EACH ROW WHEN (((new.payment_date < '2007-04-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-05-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE public.payment_date_update_handler();
-
-
---
--- Name: payment_p2007_05 update_payment_date_p2007_05; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER update_payment_date_p2007_05 BEFORE UPDATE ON public.payment_p2007_05 FOR EACH ROW WHEN (((new.payment_date < '2007-05-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-06-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE public.payment_date_update_handler();
-
-
---
--- Name: payment_p2007_06 update_payment_date_p2007_06; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER update_payment_date_p2007_06 BEFORE UPDATE ON public.payment_p2007_06 FOR EACH ROW WHEN (((new.payment_date < '2007-06-01 00:00:00'::timestamp without time zone) OR (new.payment_date >= '2007-07-01 00:00:00'::timestamp without time zone))) EXECUTE PROCEDURE public.payment_date_update_handler();
 
 
 --
