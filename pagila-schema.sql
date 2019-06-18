@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.3
--- Dumped by pg_dump version 11.3
+-- Dumped from database version 12devel
+-- Dumped by pg_dump version 12devel
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -355,7 +355,7 @@ ALTER TABLE public.actor_actor_id_seq OWNER TO postgres;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: actor; Type: TABLE; Schema: public; Owner: postgres
@@ -1342,105 +1342,105 @@ CREATE RULE payment_pk_update AS
 -- Name: film film_fulltext_trigger; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER film_fulltext_trigger BEFORE INSERT OR UPDATE ON public.film FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('fulltext', 'pg_catalog.english', 'title', 'description');
+CREATE TRIGGER film_fulltext_trigger BEFORE INSERT OR UPDATE ON public.film FOR EACH ROW EXECUTE FUNCTION tsvector_update_trigger('fulltext', 'pg_catalog.english', 'title', 'description');
 
 
 --
 -- Name: actor last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.actor FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.actor FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: address last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.address FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.address FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: category last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.category FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.category FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: city last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.city FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.city FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: country last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.country FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.country FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: customer last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.customer FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.customer FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: film last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.film FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.film FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: film_actor last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.film_actor FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.film_actor FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: film_category last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.film_category FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.film_category FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: inventory last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.inventory FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.inventory FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: language last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.language FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.language FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: rental last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.rental FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.rental FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: staff last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.staff FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.staff FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
 -- Name: store last_updated; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER last_updated BEFORE UPDATE ON public.store FOR EACH ROW EXECUTE PROCEDURE public.last_updated();
+CREATE TRIGGER last_updated BEFORE UPDATE ON public.store FOR EACH ROW EXECUTE FUNCTION public.last_updated();
 
 
 --
