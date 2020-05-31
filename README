@@ -72,6 +72,7 @@ VERSION HISTORY
 
 Version 12.a
 * use := for setting var value in last updated function
+* convert customer.active to generated smallint column 
 
 Version 11.a
 * Re-dump schema and data using newer pg_dump. This forces schema qualification of all objects within the database 
