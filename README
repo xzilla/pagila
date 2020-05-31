@@ -70,6 +70,9 @@ Note: Versions of Pagila prior to and including 0.10.1 were also made available 
 VERSION HISTORY
 ---------------
 
+Version 12.a
+* use := for setting var value in last updated function
+
 Version 11.a
 * Re-dump schema and data using newer pg_dump. This forces schema qualification of all objects within the database 
 * Convert reward_report from set-returning function to refcusor based stored procedure 
