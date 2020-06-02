@@ -725,7 +725,7 @@ CREATE VIEW public.nicer_but_slower_film_list AS
     film.rental_rate AS price,
     film.length,
     film.rating,
-    public.group_concat((((upper("substring"((actor.first_name)::text, 1, 1)) || lower("substring"((actor.first_name)::text, 2))) || upper("substring"((actor.last_name)::text, 1, 1))) || lower("substring"((actor.last_name)::text, 2)))) AS actors
+    public.group_concat((((upper("substring"((actor.first_name)::text, 1, 1)) || lower("substring"((actor.first_name)::text, 2))) || ' '::text || upper("substring"((actor.last_name)::text, 1, 1))) || lower("substring"((actor.last_name)::text, 2)))) AS actors
    FROM ((((public.category
      LEFT JOIN public.film_category ON ((category.category_id = film_category.category_id)))
      LEFT JOIN public.film ON ((film_category.film_id = film.film_id)))

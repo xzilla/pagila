@@ -71,8 +71,9 @@ VERSION HISTORY
 ---------------
 
 Version 12.a
-* use := for setting var value in last updated function
-* convert customer.active to generated smallint column 
+* Use := for setting var value in last updated function
+* Convert customer.active to generated smallint column 
+* Make nicer_but_slower_film_list view a little nicer
 
 Version 11.a
 * Re-dump schema and data using newer pg_dump. This forces schema qualification of all objects within the database 
