@@ -768,6 +768,17 @@ PARTITION BY RANGE (payment_date);
 ALTER TABLE public.payment OWNER TO postgres;
 
 --
+-- Name: payment_p0000_default; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.payment_p0000_default PARTITION OF public.payment
+DEFAULT; 
+
+
+ALTER TABLE public.payment_p0000_default OWNER TO postgres;
+
+
+--
 -- Name: payment_p2007_01; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -826,6 +837,16 @@ FOR VALUES FROM ('2007-06-01 00:00:00') TO ('2007-07-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_06 OWNER TO postgres;
+
+--
+-- Name: payment_p2007_07; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.payment_p2007_07_max PARTITION OF public.payment
+FOR VALUES FROM ('2007-07-01 00:00:00') TO (MAXVALUE);
+
+
+ALTER TABLE public.payment_p2007_07_max OWNER TO postgres;
 
 --
 -- Name: rental_rental_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
