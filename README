@@ -1,11 +1,28 @@
 Pagila
 ======
 
-Pagila is a port of the Sakila example database originally created for MySQL by Mike Hillyer of the MySQL AB documentation team. It is intended to provide a standard schema that can be used for examples in books, tutorials, articles, samples, etc... It is currently maintained via github at https://github.com/xzilla/pagila.  
+Pagila is "DVD Rental Store" type example database for PostgreSQL. It provides sample schema and data for use in instructional materials, articles, and demonstrations, and is specifically designed to show case features within PostgreSQL. It is currently maintained via github at https://github.com/xzilla/pagila.
 
 
-INSTALL NOTE
+RELEASE NOTES
+-------------
+
+Version 12.a
+* Convert actor_info to Materialized View
+* Use := for assignment in last_updated function
+* Make nicer_but_slower_film_list view a little nicer
+* Add DEFAULT and MAXVALUE partitions for payment table
+* Rebuild data for payment table
+
+
+INSTALLATION
 ------------
+
+To install the pagila database, first create an empty database named pagila, and then feed in the schema file, followed by the data file. Using psql that would look like this:
+
+psql -c "CREATE DATABASE pagila;"
+psql -d pagila -f pagila-schema.sql
+psql -d pagila -f pagila-data.sql
 
 The pagila-data.sql file and the pagila-insert-data.sql both contain the same
 data, the former using COPY commands, the latter using INSERT commands, so you 
@@ -16,7 +33,7 @@ trouble using one version or another.
 PARTITIONED TABLES
 ------------------
 
-The payment table is designed as a partitioned table with a 6 month timespan for the date range. In order to take full advantage of table partitioning, you need to make sure constraint_exclusion is set to either 'partition' (the default) or 'on' in your database. You can do this by setting "constraint_exclusion = partition" in your postgresql.conf, or by issuing the command "ALTER DATABASE pagila SET constraint_exclusion = partition" (substitute pagila for your database name if installing into a database with a different name). Note, constraint_exclusion should be on by default in modern postgres releases.  
+The payment table is designed as a partitioned table with a ~6 month timespan for the date range. In order to take full advantage of table partitioning, you need to make sure constraint_exclusion is set to either 'partition' (the default) or 'on' in your database. You can do this by setting "constraint_exclusion = partition" in your postgresql.conf, or by issuing the command "ALTER DATABASE pagila SET constraint_exclusion = partition" (substitute pagila for your database name if installing into a database with a different name). Note, constraint_exclusion should be on by default in modern postgres releases.
 
 
 ARTICLES
@@ -46,34 +63,32 @@ http://xzilla.net/blog/2006/Jun/Building-Rails-to-Legacy-Applications-Take-Contr
 http://xzilla.net/blog/2006/Jun/Building-Rails-to-Legacy-Applications-Masking-the-Database.html
 
 
-PORT INFO 
+PORT INFO
 ---------
 
-For those interested in the original porting information, all tables, data, views, and functions have been ported, which resulted in some schema changes, including: 
+Pagila is a port of the Sakila example database originally created for MySQL by Mike Hillyer of the MySQL AB documentation team. Like other example databases, it provides a hypothetical "DVD Rental Store" schema and data to be used for examples in books, tutorials, articles, samples, etc...
+
+For those interested in the original porting information, all tables, data, views, and functions have been ported, which resulted in some schema changes, including:
 
 * Changed char(1) true/false fields to true boolean fields
 * The last_update columns were set with triggers to update them
 * Added foreign keys
 * Removed 'DEFAULT 0' on foreign keys since it's pointless with real FK's
-* Used PostgreSQL built-in fulltext searching for fulltext indexing, removing the need for the film_text table.  
-* In the original port, the rewards_report function was ported to a simple SRF. It is now a stored procedure that returns multiple cursor references. 
+* Used PostgreSQL built-in fulltext searching for fulltext indexing, removing the need for the film_text table.
+* In the original port, the rewards_report function was ported to a simple SRF. It is now a stored procedure that returns multiple cursor references.
 
-The schema and data for the Sakila database were made available under the BSD license which can be found at http://www.opensource.org/licenses/bsd-license.php. 
+The schema and data for the Sakila database were made available under the BSD license which can be found at http://www.opensource.org/licenses/bsd-license.php.
+
 
 LICENSE
 -------
 Pagila is made available under The PostgreSQL License (https://opensource.org/licenses/PostgreSQL)
 
-Note: Versions of Pagila prior to and including 0.10.1 were also made available under the same BSD license as Sakila. 
+Note: Versions of Pagila prior to and including 0.10.1 were also made available under the same BSD license as Sakila.
 
 
 VERSION HISTORY
 ---------------
-
-Version 12.a
-* Use := for setting var value in last updated function
-* Convert customer.active to generated smallint column 
-* Make nicer_but_slower_film_list view a little nicer
 
 Version 11.a
 * Re-dump schema and data using newer pg_dump. This forces schema qualification of all objects within the database 
