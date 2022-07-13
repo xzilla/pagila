@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12devel
--- Dumped by pg_dump version 12devel
+-- Dumped from database version 13.7
+-- Dumped by pg_dump version 13.7
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -725,7 +725,7 @@ CREATE VIEW public.nicer_but_slower_film_list AS
     film.rental_rate AS price,
     film.length,
     film.rating,
-    public.group_concat((((upper("substring"((actor.first_name)::text, 1, 1)) || lower("substring"((actor.first_name)::text, 2))) || ' '::text || upper("substring"((actor.last_name)::text, 1, 1))) || lower("substring"((actor.last_name)::text, 2)))) AS actors
+    public.group_concat(((((upper("substring"((actor.first_name)::text, 1, 1)) || lower("substring"((actor.first_name)::text, 2))) || ' '::text) || upper("substring"((actor.last_name)::text, 1, 1))) || lower("substring"((actor.last_name)::text, 2)))) AS actors
    FROM ((((public.category
      LEFT JOIN public.film_category ON ((category.category_id = film_category.category_id)))
      LEFT JOIN public.film ON ((film_category.film_id = film.film_id)))
@@ -771,19 +771,32 @@ ALTER TABLE public.payment OWNER TO postgres;
 -- Name: payment_p0000_default; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p0000_default PARTITION OF public.payment
-DEFAULT; 
+CREATE TABLE public.payment_p0000_default (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p0000_default DEFAULT;
 
 
 ALTER TABLE public.payment_p0000_default OWNER TO postgres;
-
 
 --
 -- Name: payment_p2007_01; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p2007_01 PARTITION OF public.payment
-FOR VALUES FROM ('2007-01-01 00:00:00') TO ('2007-02-01 00:00:00');
+CREATE TABLE public.payment_p2007_01 (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_01 FOR VALUES FROM ('2007-01-01 00:00:00') TO ('2007-02-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_01 OWNER TO postgres;
@@ -792,8 +805,15 @@ ALTER TABLE public.payment_p2007_01 OWNER TO postgres;
 -- Name: payment_p2007_02; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p2007_02 PARTITION OF public.payment
-FOR VALUES FROM ('2007-02-01 00:00:00') TO ('2007-03-01 00:00:00');
+CREATE TABLE public.payment_p2007_02 (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_02 FOR VALUES FROM ('2007-02-01 00:00:00') TO ('2007-03-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_02 OWNER TO postgres;
@@ -802,8 +822,15 @@ ALTER TABLE public.payment_p2007_02 OWNER TO postgres;
 -- Name: payment_p2007_03; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p2007_03 PARTITION OF public.payment
-FOR VALUES FROM ('2007-03-01 00:00:00') TO ('2007-04-01 00:00:00');
+CREATE TABLE public.payment_p2007_03 (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_03 FOR VALUES FROM ('2007-03-01 00:00:00') TO ('2007-04-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_03 OWNER TO postgres;
@@ -812,8 +839,15 @@ ALTER TABLE public.payment_p2007_03 OWNER TO postgres;
 -- Name: payment_p2007_04; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p2007_04 PARTITION OF public.payment
-FOR VALUES FROM ('2007-04-01 00:00:00') TO ('2007-05-01 00:00:00');
+CREATE TABLE public.payment_p2007_04 (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_04 FOR VALUES FROM ('2007-04-01 00:00:00') TO ('2007-05-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_04 OWNER TO postgres;
@@ -822,8 +856,15 @@ ALTER TABLE public.payment_p2007_04 OWNER TO postgres;
 -- Name: payment_p2007_05; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p2007_05 PARTITION OF public.payment
-FOR VALUES FROM ('2007-05-01 00:00:00') TO ('2007-06-01 00:00:00');
+CREATE TABLE public.payment_p2007_05 (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_05 FOR VALUES FROM ('2007-05-01 00:00:00') TO ('2007-06-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_05 OWNER TO postgres;
@@ -832,18 +873,32 @@ ALTER TABLE public.payment_p2007_05 OWNER TO postgres;
 -- Name: payment_p2007_06; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p2007_06 PARTITION OF public.payment
-FOR VALUES FROM ('2007-06-01 00:00:00') TO ('2007-07-01 00:00:00');
+CREATE TABLE public.payment_p2007_06 (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_06 FOR VALUES FROM ('2007-06-01 00:00:00') TO ('2007-07-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_06 OWNER TO postgres;
 
 --
--- Name: payment_p2007_07; Type: TABLE; Schema: public; Owner: postgres
+-- Name: payment_p2007_07_max; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.payment_p2007_07_max PARTITION OF public.payment
-FOR VALUES FROM ('2007-07-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE public.payment_p2007_07_max (
+    payment_id integer DEFAULT nextval('public.payment_payment_id_seq'::regclass) NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    rental_id integer NOT NULL,
+    amount numeric(5,2) NOT NULL,
+    payment_date timestamp without time zone NOT NULL
+);
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_07_max FOR VALUES FROM ('2007-07-01 00:00:00') TO (MAXVALUE);
 
 
 ALTER TABLE public.payment_p2007_07_max OWNER TO postgres;
@@ -962,48 +1017,6 @@ CREATE TABLE public.store (
 
 
 ALTER TABLE public.store OWNER TO postgres;
-
---
--- Name: payment_p2007_01 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2007_01 ALTER COLUMN payment_id SET DEFAULT nextval('public.payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2007_02 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2007_02 ALTER COLUMN payment_id SET DEFAULT nextval('public.payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2007_03 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2007_03 ALTER COLUMN payment_id SET DEFAULT nextval('public.payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2007_04 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2007_04 ALTER COLUMN payment_id SET DEFAULT nextval('public.payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2007_05 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2007_05 ALTER COLUMN payment_id SET DEFAULT nextval('public.payment_payment_id_seq'::regclass);
-
-
---
--- Name: payment_p2007_06 payment_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.payment_p2007_06 ALTER COLUMN payment_id SET DEFAULT nextval('public.payment_payment_id_seq'::regclass);
-
 
 --
 -- Name: actor actor_pkey_incl; Type: CONSTRAINT; Schema: public; Owner: postgres
