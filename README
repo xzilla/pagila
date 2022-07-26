@@ -1,18 +1,15 @@
 Pagila
 ======
 
-Pagila is "DVD Rental Store" type example database for PostgreSQL. It provides sample schema and data for use in instructional materials, articles, and demonstrations, and is specifically designed to show case features within PostgreSQL. It is currently maintained via github at https://github.com/xzilla/pagila.
+Pagila is a "DVD Rental Store" type example database for PostgreSQL. It provides sample schema and data for use in instructional materials, articles, and demonstrations, and is specifically designed to show case features within PostgreSQL. It is currently maintained via github at https://github.com/xzilla/pagila.
 
 
 RELEASE NOTES
 -------------
 
-Version 12.a
-* Convert actor_info to Materialized View
-* Use := for assignment in last_updated function
-* Make nicer_but_slower_film_list view a little nicer
-* Add DEFAULT and MAXVALUE partitions for payment table
-* Rebuild data for payment table
+Version 13.a
+* Add complex JSONB example via rental_report view 
+* Add non-identity generated column example film.revenue_projection
 
 
 INSTALLATION
@@ -89,6 +86,12 @@ Note: Versions of Pagila prior to and including 0.10.1 were also made available 
 
 VERSION HISTORY
 ---------------
+
+Version 12.a
+ * Use := for assignment in last_updated function
+ * Make nicer_but_slower_film_list view a little nicer
+ * Add DEFAULT and MAXVALUE partitions for payment table
+ * Rebuild data for payment table
 
 Version 11.a
 * Re-dump schema and data using newer pg_dump. This forces schema qualification of all objects within the database 
