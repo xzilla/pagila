@@ -430,7 +430,8 @@ CREATE TABLE public.film (
     rating public.mpaa_rating DEFAULT 'G'::public.mpaa_rating,
     last_update timestamp without time zone DEFAULT now() NOT NULL,
     special_features text[],
-    fulltext tsvector NOT NULL
+    fulltext tsvector NOT NULL,
+    revenue_projection numeric(5,2) GENERATED ALWAYS AS (((rental_duration)::numeric * rental_rate)) STORED
 );
 
 
