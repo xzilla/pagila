@@ -935,6 +935,17 @@ CREATE TABLE public.rental (
 ALTER TABLE public.rental OWNER TO postgres;
 
 --
+-- Name: rental_report; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.rental_report AS
+SELECT
+    NULL::jsonb AS report;
+
+
+ALTER TABLE public.rental_report OWNER TO postgres;
+
+--
 -- Name: staff_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1365,6 +1376,24 @@ CREATE UNIQUE INDEX idx_unq_manager_staff_id ON public.store USING btree (manage
 --
 
 CREATE UNIQUE INDEX idx_unq_rental_rental_date_inventory_id_customer_id ON public.rental USING btree (rental_date, inventory_id, customer_id);
+
+
+--
+-- Name: rental_report _RETURN; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE OR REPLACE VIEW public.rental_report AS
+ WITH rentals AS (
+         SELECT film.film_id,
+            ((((('{ "title": '::text || quote_ident((film.title)::text)) || ', "mpaa-rating": '::text) || quote_ident((film.rating)::text)) || ' }'::text))::jsonb AS jsonb
+           FROM public.film
+        )
+ SELECT ((((((('{ "customer": '::text || quote_ident((((customer.first_name)::text || ' '::text) || (customer.last_name)::text))) || ', "rental_date": '::text) || quote_ident(((rental.rental_date)::date)::text)) || ', "rentals": '::text) || json_agg(rentals.jsonb)) || '}'::text))::jsonb AS report
+   FROM (((public.rental
+     JOIN public.customer USING (customer_id))
+     JOIN public.inventory USING (inventory_id))
+     JOIN rentals USING (film_id))
+  GROUP BY customer.customer_id, ((rental.rental_date)::date);
 
 
 --
