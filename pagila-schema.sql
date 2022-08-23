@@ -715,10 +715,10 @@ CREATE TABLE public.language (
 ALTER TABLE public.language OWNER TO postgres;
 
 --
--- Name: nicer_but_slower_film_list; Type: VIEW; Schema: public; Owner: postgres
+-- Name: nicer_but_slower_film_list; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
 --
 
-CREATE VIEW public.nicer_but_slower_film_list AS
+CREATE MATERIALIZED VIEW public.nicer_but_slower_film_list AS
  SELECT film.film_id AS fid,
     film.title,
     film.description,
@@ -732,7 +732,8 @@ CREATE VIEW public.nicer_but_slower_film_list AS
      LEFT JOIN public.film ON ((film_category.film_id = film.film_id)))
      JOIN public.film_actor ON ((film.film_id = film_actor.film_id)))
      JOIN public.actor ON ((film_actor.actor_id = actor.actor_id)))
-  GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating;
+  GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating
+  WITH NO DATA;
 
 
 ALTER TABLE public.nicer_but_slower_film_list OWNER TO postgres;
