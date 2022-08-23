@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.7
--- Dumped by pg_dump version 13.7
+-- Dumped from database version 14.4
+-- Dumped by pg_dump version 14.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -263,7 +263,7 @@ ALTER FUNCTION public.payment_id_change_handler(old_payment_id integer, new_paym
 -- Name: rewards_report(integer, numeric, date, refcursor, refcursor); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
-CREATE PROCEDURE public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric, report_month date DEFAULT CURRENT_DATE, INOUT refcur_client refcursor DEFAULT 'rewardees_detail'::refcursor, INOUT refcur_count refcursor DEFAULT 'rewardees_count'::refcursor)
+CREATE PROCEDURE public.rewards_report(IN min_monthly_purchases integer, IN min_dollar_amount_purchased numeric, IN report_month date DEFAULT CURRENT_DATE, INOUT refcur_client refcursor DEFAULT 'rewardees_detail'::refcursor, INOUT refcur_count refcursor DEFAULT 'rewardees_count'::refcursor)
     LANGUAGE plpgsql SECURITY DEFINER
     AS $_$
 DECLARE
@@ -325,7 +325,7 @@ END
 $_$;
 
 
-ALTER PROCEDURE public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric, report_month date, INOUT refcur_client refcursor, INOUT refcur_count refcursor) OWNER TO postgres;
+ALTER PROCEDURE public.rewards_report(IN min_monthly_purchases integer, IN min_dollar_amount_purchased numeric, IN report_month date, INOUT refcur_client refcursor, INOUT refcur_count refcursor) OWNER TO postgres;
 
 --
 -- Name: group_concat(text); Type: AGGREGATE; Schema: public; Owner: postgres
@@ -780,7 +780,6 @@ CREATE TABLE public.payment_p0000_default (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p0000_default DEFAULT;
 
 
 ALTER TABLE public.payment_p0000_default OWNER TO postgres;
@@ -797,7 +796,6 @@ CREATE TABLE public.payment_p2007_01 (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_01 FOR VALUES FROM ('2007-01-01 00:00:00') TO ('2007-02-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_01 OWNER TO postgres;
@@ -814,7 +812,6 @@ CREATE TABLE public.payment_p2007_02 (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_02 FOR VALUES FROM ('2007-02-01 00:00:00') TO ('2007-03-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_02 OWNER TO postgres;
@@ -831,7 +828,6 @@ CREATE TABLE public.payment_p2007_03 (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_03 FOR VALUES FROM ('2007-03-01 00:00:00') TO ('2007-04-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_03 OWNER TO postgres;
@@ -848,7 +844,6 @@ CREATE TABLE public.payment_p2007_04 (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_04 FOR VALUES FROM ('2007-04-01 00:00:00') TO ('2007-05-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_04 OWNER TO postgres;
@@ -865,7 +860,6 @@ CREATE TABLE public.payment_p2007_05 (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_05 FOR VALUES FROM ('2007-05-01 00:00:00') TO ('2007-06-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_05 OWNER TO postgres;
@@ -882,7 +876,6 @@ CREATE TABLE public.payment_p2007_06 (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_06 FOR VALUES FROM ('2007-06-01 00:00:00') TO ('2007-07-01 00:00:00');
 
 
 ALTER TABLE public.payment_p2007_06 OWNER TO postgres;
@@ -899,7 +892,6 @@ CREATE TABLE public.payment_p2007_07_max (
     amount numeric(5,2) NOT NULL,
     payment_date timestamp without time zone NOT NULL
 );
-ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_07_max FOR VALUES FROM ('2007-07-01 00:00:00') TO (MAXVALUE);
 
 
 ALTER TABLE public.payment_p2007_07_max OWNER TO postgres;
@@ -1029,6 +1021,62 @@ CREATE TABLE public.store (
 
 
 ALTER TABLE public.store OWNER TO postgres;
+
+--
+-- Name: payment_p0000_default; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p0000_default DEFAULT;
+
+
+--
+-- Name: payment_p2007_01; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_01 FOR VALUES FROM ('2007-01-01 00:00:00') TO ('2007-02-01 00:00:00');
+
+
+--
+-- Name: payment_p2007_02; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_02 FOR VALUES FROM ('2007-02-01 00:00:00') TO ('2007-03-01 00:00:00');
+
+
+--
+-- Name: payment_p2007_03; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_03 FOR VALUES FROM ('2007-03-01 00:00:00') TO ('2007-04-01 00:00:00');
+
+
+--
+-- Name: payment_p2007_04; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_04 FOR VALUES FROM ('2007-04-01 00:00:00') TO ('2007-05-01 00:00:00');
+
+
+--
+-- Name: payment_p2007_05; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_05 FOR VALUES FROM ('2007-05-01 00:00:00') TO ('2007-06-01 00:00:00');
+
+
+--
+-- Name: payment_p2007_06; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_06 FOR VALUES FROM ('2007-06-01 00:00:00') TO ('2007-07-01 00:00:00');
+
+
+--
+-- Name: payment_p2007_07_max; Type: TABLE ATTACH; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment ATTACH PARTITION public.payment_p2007_07_max FOR VALUES FROM ('2007-07-01 00:00:00') TO (MAXVALUE);
+
 
 --
 -- Name: actor actor_pkey_incl; Type: CONSTRAINT; Schema: public; Owner: postgres
