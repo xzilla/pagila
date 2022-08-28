@@ -17,6 +17,15 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: legacy; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA legacy;
+
+
+ALTER SCHEMA legacy OWNER TO postgres;
+
+--
 -- Name: mpaa_rating; Type: TYPE; Schema: public; Owner: postgres
 --
 
@@ -340,6 +349,57 @@ CREATE AGGREGATE public.group_concat(text) (
 ALTER AGGREGATE public.group_concat(text) OWNER TO postgres;
 
 --
+-- Name: rental_rental_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.rental_rental_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.rental_rental_id_seq OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: rental; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.rental (
+    rental_id integer DEFAULT nextval('public.rental_rental_id_seq'::regclass) NOT NULL,
+    inventory_id integer NOT NULL,
+    customer_id smallint NOT NULL,
+    staff_id smallint NOT NULL,
+    last_update timestamp without time zone DEFAULT now() NOT NULL,
+    rental_period tsrange NOT NULL
+);
+
+
+ALTER TABLE public.rental OWNER TO postgres;
+
+--
+-- Name: rental; Type: VIEW; Schema: legacy; Owner: postgres
+--
+
+CREATE VIEW legacy.rental AS
+ SELECT rental.rental_id,
+    lower(rental.rental_period) AS rental_date,
+    rental.inventory_id,
+    rental.customer_id,
+    upper(rental.rental_period) AS return_date,
+    rental.staff_id,
+    rental.last_update
+   FROM public.rental;
+
+
+ALTER TABLE legacy.rental OWNER TO postgres;
+
+--
 -- Name: actor_actor_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -352,10 +412,6 @@ CREATE SEQUENCE public.actor_actor_id_seq
 
 
 ALTER TABLE public.actor_actor_id_seq OWNER TO postgres;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
 
 --
 -- Name: actor; Type: TABLE; Schema: public; Owner: postgres
@@ -898,37 +954,6 @@ CREATE TABLE public.payment_p2007_07_max (
 ALTER TABLE public.payment_p2007_07_max OWNER TO postgres;
 
 --
--- Name: rental_rental_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.rental_rental_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.rental_rental_id_seq OWNER TO postgres;
-
---
--- Name: rental; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.rental (
-    rental_id integer DEFAULT nextval('public.rental_rental_id_seq'::regclass) NOT NULL,
-    rental_date timestamp without time zone NOT NULL,
-    inventory_id integer NOT NULL,
-    customer_id smallint NOT NULL,
-    return_date timestamp without time zone,
-    staff_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE public.rental OWNER TO postgres;
-
---
 -- Name: rental_report; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1422,13 +1447,6 @@ CREATE UNIQUE INDEX idx_unq_manager_staff_id ON public.store USING btree (manage
 
 
 --
--- Name: idx_unq_rental_rental_date_inventory_id_customer_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX idx_unq_rental_rental_date_inventory_id_customer_id ON public.rental USING btree (rental_date, inventory_id, customer_id);
-
-
---
 -- Name: rental_report _RETURN; Type: RULE; Schema: public; Owner: postgres
 --
 
@@ -1438,12 +1456,12 @@ CREATE OR REPLACE VIEW public.rental_report AS
             ((((('{ "title": '::text || quote_ident((film.title)::text)) || ', "mpaa-rating": '::text) || quote_ident((film.rating)::text)) || ' }'::text))::jsonb AS jsonb
            FROM public.film
         )
- SELECT ((((((('{ "customer": '::text || quote_ident((((customer.first_name)::text || ' '::text) || (customer.last_name)::text))) || ', "rental_date": '::text) || quote_ident(((rental.rental_date)::date)::text)) || ', "rentals": '::text) || json_agg(rentals.jsonb)) || '}'::text))::jsonb AS report
+ SELECT ((((((('{ "customer": '::text || quote_ident((((customer.first_name)::text || ' '::text) || (customer.last_name)::text))) || ', "rental_date": '::text) || quote_ident(((lower(rental.rental_period))::date)::text)) || ', "rentals": '::text) || json_agg(rentals.jsonb)) || '}'::text))::jsonb AS report
    FROM (((public.rental
      JOIN public.customer USING (customer_id))
      JOIN public.inventory USING (inventory_id))
      JOIN rentals USING (film_id))
-  GROUP BY customer.customer_id, ((rental.rental_date)::date);
+  GROUP BY customer.customer_id, ((lower(rental.rental_period))::date);
 
 
 --
