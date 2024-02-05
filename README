@@ -7,9 +7,11 @@ Pagila is a "DVD Rental Store" type example database for PostgreSQL. It provides
 RELEASE NOTES
 -------------
 
-Version 13.a
-* Add complex JSONB example via rental_report view 
-* Add non-identity generated column example film.revenue_projection
+Version 14.a
+* Convert nicer_but_slower_film_list to materialized view
+* Replace rental_date/rental_return columns with rental_period tsrange column
+* Create non-public schema example aka "legacy" schema
+* Create view in legacy schema matching original rental table schema
 
 
 INSTALLATION
@@ -79,6 +81,10 @@ The schema and data for the Sakila database were made available under the BSD li
 
 LICENSE
 -------
+
+Portions Copyright (c) 2006-2022 Robert Treat
+Portions Copyright (c) 2006 MySQL AB
+
 Pagila is made available under The PostgreSQL License (https://opensource.org/licenses/PostgreSQL)
 
 Note: Versions of Pagila prior to and including 0.10.1 were also made available under the same BSD license as Sakila.
@@ -86,6 +92,10 @@ Note: Versions of Pagila prior to and including 0.10.1 were also made available 
 
 VERSION HISTORY
 ---------------
+
+Version 13.a
+ * Add complex JSONB example via rental_report view
+ * Add non-identity generated column example film.revenue_projection
 
 Version 12.a
  * Use := for assignment in last_updated function
