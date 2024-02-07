@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.4
--- Dumped by pg_dump version 14.4
+-- Dumped from database version 15.0
+-- Dumped by pg_dump version 15.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -963,6 +963,32 @@ SELECT
 
 
 ALTER TABLE public.rental_report OWNER TO postgres;
+
+--
+-- Name: sales_by_film_category; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.sales_by_film_category AS
+ SELECT c.name AS category,
+    sum(p.amount) AS total_sales
+   FROM (((((public.payment p
+     JOIN public.rental r ON ((p.rental_id = r.rental_id)))
+     JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
+     JOIN public.film f ON ((i.film_id = f.film_id)))
+     JOIN public.film_category fc ON ((f.film_id = fc.film_id)))
+     JOIN public.category c ON ((fc.category_id = c.category_id)))
+  GROUP BY c.name
+  ORDER BY (sum(p.amount)) DESC;
+
+
+ALTER TABLE public.sales_by_film_category OWNER TO postgres;
+
+--
+-- Name: VIEW sales_by_film_category; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON VIEW public.sales_by_film_category IS 'Note that total sales will add up to >100% because some titles belong to more than one category';
+
 
 --
 -- Name: staff_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
