@@ -991,6 +991,34 @@ COMMENT ON VIEW public.sales_by_film_category IS 'Note that total sales will add
 
 
 --
+-- Name: sales_top5_by_film_category; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.sales_top5_by_film_category AS
+ WITH sales_rankings AS (
+         SELECT c.name AS category,
+            f.title,
+            sum(p.amount) AS sum,
+            rank() OVER (PARTITION BY c.name ORDER BY (sum(p.amount)) DESC) AS rank
+           FROM (((((public.payment p
+             JOIN public.rental r ON ((p.rental_id = r.rental_id)))
+             JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
+             JOIN public.film f ON ((i.film_id = f.film_id)))
+             JOIN public.film_category fc ON ((f.film_id = fc.film_id)))
+             JOIN public.category c ON ((fc.category_id = c.category_id)))
+          GROUP BY c.name, f.title
+        )
+ SELECT sales_rankings.category,
+    sales_rankings.rank,
+    sales_rankings.title,
+    sales_rankings.sum AS sales
+   FROM sales_rankings
+  WHERE (sales_rankings.rank <= 5);
+
+
+ALTER TABLE public.sales_top5_by_film_category OWNER TO postgres;
+
+--
 -- Name: staff_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
