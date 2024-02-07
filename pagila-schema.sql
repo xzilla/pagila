@@ -239,6 +239,29 @@ END $$;
 ALTER FUNCTION public.last_updated() OWNER TO postgres;
 
 --
+-- Name: make_payment_data_current(); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.make_payment_data_current()
+    LANGUAGE plpgsql SECURITY DEFINER
+    AS $$
+BEGIN
+LOCK TABLE payment IN ACCESS EXCLUSIVE MODE;
+CREATE temporary TABLE currentized_payments ON COMMIT DROP AS
+SELECT payment_id, customer_id, staff_id, rental_id, amount,
+payment_date + (now() - (select max(payment_date) from payment)) as payment_date FROM payment ORDER BY 6;
+TRUNCATE payment;
+DROP TABLE IF EXISTS payment_p2007_07_max;
+EXECUTE (with dates as (select date_trunc('month',generate_series(min,max,'1 month')) d from (select min(payment_date), max(payment_date) from currentized_payments) payments_range) select replace(group_concat( 'CREATE TABLE IF NOT EXISTS payment_p' || replace(date_trunc('month',d)::date::text,'-','_') || ' PARTITION OF payment FOR VALUES FROM (' || quote_literal(d::date) || ') TO (' || CASE WHEN d+'1 month'::interval < current_date THEN quote_literal((d+'1 month'::interval)::date) ELSE 'MAXVALUE' END || ')' ) , ',',';') from dates);
+insert into payment select * from currentized_payments;
+analyze payment;
+return;
+END $$;
+
+
+ALTER PROCEDURE public.make_payment_data_current() OWNER TO postgres;
+
+--
 -- Name: payment_id_change_handler(integer, integer, smallint, smallint, integer, numeric, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
