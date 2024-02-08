@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.0
--- Dumped by pg_dump version 15.0
+-- Dumped from database version 16.0
+-- Dumped by pg_dump version 16.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -383,7 +383,7 @@ CREATE SEQUENCE public.rental_rental_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.rental_rental_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.rental_rental_id_seq OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -410,17 +410,17 @@ ALTER TABLE public.rental OWNER TO postgres;
 --
 
 CREATE VIEW legacy.rental AS
- SELECT rental.rental_id,
-    lower(rental.rental_period) AS rental_date,
-    rental.inventory_id,
-    rental.customer_id,
-    upper(rental.rental_period) AS return_date,
-    rental.staff_id,
-    rental.last_update
+ SELECT rental_id,
+    lower(rental_period) AS rental_date,
+    inventory_id,
+    customer_id,
+    upper(rental_period) AS return_date,
+    staff_id,
+    last_update
    FROM public.rental;
 
 
-ALTER TABLE legacy.rental OWNER TO postgres;
+ALTER VIEW legacy.rental OWNER TO postgres;
 
 --
 -- Name: actor_actor_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -434,7 +434,7 @@ CREATE SEQUENCE public.actor_actor_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.actor_actor_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.actor_actor_id_seq OWNER TO postgres;
 
 --
 -- Name: actor; Type: TABLE; Schema: public; Owner: postgres
@@ -462,7 +462,7 @@ CREATE SEQUENCE public.category_category_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.category_category_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.category_category_id_seq OWNER TO postgres;
 
 --
 -- Name: category; Type: TABLE; Schema: public; Owner: postgres
@@ -489,7 +489,7 @@ CREATE SEQUENCE public.film_film_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.film_film_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.film_film_id_seq OWNER TO postgres;
 
 --
 -- Name: film; Type: TABLE; Schema: public; Owner: postgres
@@ -563,7 +563,7 @@ CREATE VIEW public.actor_info AS
   GROUP BY a.actor_id, a.first_name, a.last_name;
 
 
-ALTER TABLE public.actor_info OWNER TO postgres;
+ALTER VIEW public.actor_info OWNER TO postgres;
 
 --
 -- Name: address_address_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -577,7 +577,7 @@ CREATE SEQUENCE public.address_address_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.address_address_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.address_address_id_seq OWNER TO postgres;
 
 --
 -- Name: address; Type: TABLE; Schema: public; Owner: postgres
@@ -609,7 +609,7 @@ CREATE SEQUENCE public.city_city_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.city_city_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.city_city_id_seq OWNER TO postgres;
 
 --
 -- Name: city; Type: TABLE; Schema: public; Owner: postgres
@@ -637,7 +637,7 @@ CREATE SEQUENCE public.country_country_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.country_country_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.country_country_id_seq OWNER TO postgres;
 
 --
 -- Name: country; Type: TABLE; Schema: public; Owner: postgres
@@ -664,7 +664,7 @@ CREATE SEQUENCE public.customer_customer_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.customer_customer_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.customer_customer_id_seq OWNER TO postgres;
 
 --
 -- Name: customer; Type: TABLE; Schema: public; Owner: postgres
@@ -713,7 +713,7 @@ CREATE VIEW public.customer_list AS
      JOIN public.country ON ((city.country_id = country.country_id)));
 
 
-ALTER TABLE public.customer_list OWNER TO postgres;
+ALTER VIEW public.customer_list OWNER TO postgres;
 
 --
 -- Name: film_list; Type: VIEW; Schema: public; Owner: postgres
@@ -736,7 +736,7 @@ CREATE VIEW public.film_list AS
   GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating;
 
 
-ALTER TABLE public.film_list OWNER TO postgres;
+ALTER VIEW public.film_list OWNER TO postgres;
 
 --
 -- Name: inventory_inventory_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -750,7 +750,7 @@ CREATE SEQUENCE public.inventory_inventory_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.inventory_inventory_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.inventory_inventory_id_seq OWNER TO postgres;
 
 --
 -- Name: inventory; Type: TABLE; Schema: public; Owner: postgres
@@ -778,7 +778,7 @@ CREATE SEQUENCE public.language_language_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.language_language_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.language_language_id_seq OWNER TO postgres;
 
 --
 -- Name: language; Type: TABLE; Schema: public; Owner: postgres
@@ -815,7 +815,7 @@ CREATE MATERIALIZED VIEW public.nicer_but_slower_film_list AS
   WITH NO DATA;
 
 
-ALTER TABLE public.nicer_but_slower_film_list OWNER TO postgres;
+ALTER MATERIALIZED VIEW public.nicer_but_slower_film_list OWNER TO postgres;
 
 --
 -- Name: payment_payment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -829,7 +829,7 @@ CREATE SEQUENCE public.payment_payment_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payment_payment_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.payment_payment_id_seq OWNER TO postgres;
 
 --
 -- Name: payment; Type: TABLE; Schema: public; Owner: postgres
@@ -985,7 +985,7 @@ SELECT
     NULL::jsonb AS report;
 
 
-ALTER TABLE public.rental_report OWNER TO postgres;
+ALTER VIEW public.rental_report OWNER TO postgres;
 
 --
 -- Name: sales_by_film_category; Type: VIEW; Schema: public; Owner: postgres
@@ -1004,7 +1004,7 @@ CREATE VIEW public.sales_by_film_category AS
   ORDER BY (sum(p.amount)) DESC;
 
 
-ALTER TABLE public.sales_by_film_category OWNER TO postgres;
+ALTER VIEW public.sales_by_film_category OWNER TO postgres;
 
 --
 -- Name: VIEW sales_by_film_category; Type: COMMENT; Schema: public; Owner: postgres
@@ -1031,15 +1031,15 @@ CREATE VIEW public.sales_top5_by_film_category AS
              JOIN public.category c ON ((fc.category_id = c.category_id)))
           GROUP BY c.name, f.title
         )
- SELECT sales_rankings.category,
-    sales_rankings.rank,
-    sales_rankings.title,
-    sales_rankings.sum AS sales
+ SELECT category,
+    rank,
+    title,
+    sum AS sales
    FROM sales_rankings
-  WHERE (sales_rankings.rank <= 5);
+  WHERE (rank <= 5);
 
 
-ALTER TABLE public.sales_top5_by_film_category OWNER TO postgres;
+ALTER VIEW public.sales_top5_by_film_category OWNER TO postgres;
 
 --
 -- Name: staff_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1053,7 +1053,7 @@ CREATE SEQUENCE public.staff_staff_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.staff_staff_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.staff_staff_id_seq OWNER TO postgres;
 
 --
 -- Name: staff; Type: TABLE; Schema: public; Owner: postgres
@@ -1095,7 +1095,7 @@ CREATE VIEW public.staff_list AS
      JOIN public.country USING (country_id));
 
 
-ALTER TABLE public.staff_list OWNER TO postgres;
+ALTER VIEW public.staff_list OWNER TO postgres;
 
 --
 -- Name: store_store_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1109,7 +1109,7 @@ CREATE SEQUENCE public.store_store_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.store_store_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.store_store_id_seq OWNER TO postgres;
 
 --
 -- Name: store; Type: TABLE; Schema: public; Owner: postgres
