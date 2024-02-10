@@ -731,8 +731,8 @@ CREATE VIEW public.film_list AS
    FROM ((((public.category
      LEFT JOIN public.film_category ON ((category.category_id = film_category.category_id)))
      LEFT JOIN public.film ON ((film_category.film_id = film.film_id)))
-     JOIN public.film_actor ON ((film.film_id = film_actor.film_id)))
-     JOIN public.actor ON ((film_actor.actor_id = actor.actor_id)))
+     LEFT JOIN public.film_actor ON ((film.film_id = film_actor.film_id)))
+     LEFT JOIN public.actor ON ((film_actor.actor_id = actor.actor_id)))
   GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating;
 
 
@@ -809,8 +809,8 @@ CREATE MATERIALIZED VIEW public.nicer_but_slower_film_list AS
    FROM ((((public.category
      LEFT JOIN public.film_category ON ((category.category_id = film_category.category_id)))
      LEFT JOIN public.film ON ((film_category.film_id = film.film_id)))
-     JOIN public.film_actor ON ((film.film_id = film_actor.film_id)))
-     JOIN public.actor ON ((film_actor.actor_id = actor.actor_id)))
+     LEFT JOIN public.film_actor ON ((film.film_id = film_actor.film_id)))
+     LEFT JOIN public.actor ON ((film_actor.actor_id = actor.actor_id)))
   GROUP BY film.film_id, film.title, film.description, category.name, film.rental_rate, film.length, film.rating
   WITH NO DATA;
 
