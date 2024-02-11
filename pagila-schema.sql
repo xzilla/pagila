@@ -1014,34 +1014,6 @@ COMMENT ON VIEW public.sales_by_film_category IS 'Note that total sales will add
 
 
 --
--- Name: sales_top5_by_film_category; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW public.sales_top5_by_film_category AS
- WITH sales_rankings AS (
-         SELECT c.name AS category,
-            f.title,
-            sum(p.amount) AS sum,
-            rank() OVER (PARTITION BY c.name ORDER BY (sum(p.amount)) DESC) AS rank
-           FROM (((((public.payment p
-             JOIN public.rental r ON ((p.rental_id = r.rental_id)))
-             JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
-             JOIN public.film f ON ((i.film_id = f.film_id)))
-             JOIN public.film_category fc ON ((f.film_id = fc.film_id)))
-             JOIN public.category c ON ((fc.category_id = c.category_id)))
-          GROUP BY c.name, f.title
-        )
- SELECT category,
-    rank,
-    title,
-    sum AS sales
-   FROM sales_rankings
-  WHERE (rank <= 5);
-
-
-ALTER VIEW public.sales_top5_by_film_category OWNER TO postgres;
-
---
 -- Name: staff_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1077,27 +1049,6 @@ CREATE TABLE public.staff (
 ALTER TABLE public.staff OWNER TO postgres;
 
 --
--- Name: staff_list; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW public.staff_list AS
- SELECT s.staff_id AS id,
-    (((s.first_name)::text || ' '::text) || (s.last_name)::text) AS name,
-    a.address,
-    a.postal_code AS "zip code",
-    a.phone,
-    city.city,
-    country.country,
-    s.store_id AS sid
-   FROM (((public.staff s
-     JOIN public.address a USING (address_id))
-     JOIN public.city USING (city_id))
-     JOIN public.country USING (country_id));
-
-
-ALTER VIEW public.staff_list OWNER TO postgres;
-
---
 -- Name: store_store_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1124,6 +1075,77 @@ CREATE TABLE public.store (
 
 
 ALTER TABLE public.store OWNER TO postgres;
+
+--
+-- Name: sales_by_store; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.sales_by_store AS
+ SELECT concat(c.city, ', ', cy.country) AS store,
+    concat(m.first_name, ' ', m.last_name) AS manager,
+    sum(p.amount) AS total_sales
+   FROM (((((((public.payment p
+     JOIN public.rental r ON ((p.rental_id = r.rental_id)))
+     JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
+     JOIN public.store s ON ((i.store_id = s.store_id)))
+     JOIN public.address a ON ((s.address_id = a.address_id)))
+     JOIN public.city c ON ((a.city_id = c.city_id)))
+     JOIN public.country cy ON ((c.country_id = cy.country_id)))
+     JOIN public.staff m ON ((s.manager_staff_id = m.staff_id)))
+  GROUP BY s.store_id, c.city, cy.country, m.first_name, m.last_name
+  ORDER BY cy.country, c.city;
+
+
+ALTER VIEW public.sales_by_store OWNER TO postgres;
+
+--
+-- Name: sales_top5_by_film_category; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.sales_top5_by_film_category AS
+ WITH sales_rankings AS (
+         SELECT c.name AS category,
+            f.title,
+            sum(p.amount) AS sum,
+            rank() OVER (PARTITION BY c.name ORDER BY (sum(p.amount)) DESC) AS rank
+           FROM (((((public.payment p
+             JOIN public.rental r ON ((p.rental_id = r.rental_id)))
+             JOIN public.inventory i ON ((r.inventory_id = i.inventory_id)))
+             JOIN public.film f ON ((i.film_id = f.film_id)))
+             JOIN public.film_category fc ON ((f.film_id = fc.film_id)))
+             JOIN public.category c ON ((fc.category_id = c.category_id)))
+          GROUP BY c.name, f.title
+        )
+ SELECT category,
+    rank,
+    title,
+    sum AS sales
+   FROM sales_rankings
+  WHERE (rank <= 5);
+
+
+ALTER VIEW public.sales_top5_by_film_category OWNER TO postgres;
+
+--
+-- Name: staff_list; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.staff_list AS
+ SELECT s.staff_id AS id,
+    (((s.first_name)::text || ' '::text) || (s.last_name)::text) AS name,
+    a.address,
+    a.postal_code AS "zip code",
+    a.phone,
+    city.city,
+    country.country,
+    s.store_id AS sid
+   FROM (((public.staff s
+     JOIN public.address a USING (address_id))
+     JOIN public.city USING (city_id))
+     JOIN public.country USING (country_id));
+
+
+ALTER VIEW public.staff_list OWNER TO postgres;
 
 --
 -- Name: payment_p0000_default; Type: TABLE ATTACH; Schema: public; Owner: postgres
