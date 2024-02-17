@@ -399,7 +399,7 @@ CREATE TABLE public.rental (
     customer_id smallint NOT NULL,
     staff_id smallint NOT NULL,
     last_update timestamp without time zone DEFAULT now() NOT NULL,
-    rental_period tsrange NOT NULL
+    rental_period tsrange DEFAULT tsrange((now())::timestamp without time zone, NULL::timestamp without time zone) NOT NULL
 );
 
 
