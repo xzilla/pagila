@@ -7,10 +7,11 @@ Pagila is a "DVD Rental Store" type example database for PostgreSQL. It provides
 RELEASE NOTES
 -------------
 
-Version 15.a
-* Add sales_by_film_category along with COMMENT ON view 
-* Add sales_top5_by_film_category view showing topN by category window function sql
-* Add utility procedure "make_payment_data_current()" which updates payment date to recent date values
+Version 16.a
+* Replace customer.create_date default 'now' constant with sql standard current_date
+* Add default tsrange example for rental.rental_period
+* Add sales_by_store view
+* Fix "film list" views to include films with no actors
 
 
 INSTALLATION
@@ -23,8 +24,8 @@ psql -d pagila -f pagila-schema.sql
 psql -d pagila -f pagila-data.sql
 
 The pagila-data.sql file and the pagila-insert-data.sql both contain the same
-data, the former using COPY commands, the latter using INSERT commands, so you 
-only need to install one of them. Both formats are provided for those who have
+data; the former using COPY commands, the latter using INSERT commands; so you
+only need to load one of them. Both formats are provided for those who have
 trouble using one version or another.
 
 
@@ -91,6 +92,11 @@ Note: Versions of Pagila prior to and including 0.10.1 were also made available 
 
 VERSION HISTORY
 ---------------
+
+Version 15.a
+* Add sales_by_film_category along with COMMENT ON view
+* Add sales_top5_by_film_category view showing topN by category window function sql
+* Add utility procedure "make_payment_data_current()" which updates payment date to recent date values
 
 Version 14.a
 * Convert nicer_but_slower_film_list to materialized view
