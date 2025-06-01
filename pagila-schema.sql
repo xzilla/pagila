@@ -740,6 +740,45 @@ CREATE VIEW public.film_list AS
 ALTER VIEW public.film_list OWNER TO postgres;
 
 --
+-- Name: rental_report; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.rental_report AS
+SELECT
+    NULL::jsonb AS report;
+
+
+ALTER VIEW public.rental_report OWNER TO postgres;
+
+--
+-- Name: films_per_customer_rental; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.films_per_customer_rental AS
+ SELECT rt.rental_date,
+    rt.customer,
+    rt.film_no,
+    rt.title,
+    rt.mpaa
+   FROM public.rental_report,
+    LATERAL JSON_TABLE(
+            rental_report.report, '$[*]' AS json_table_path_0
+            COLUMNS (
+                customer text PATH '$."customer"',
+                rental_date date PATH '$."rental_date"',
+                NESTED PATH '$."films"[*]' AS json_table_path_1
+                COLUMNS (
+                    film_no FOR ORDINALITY,
+                    title text PATH '$."title"',
+                    mpaa public.mpaa_rating PATH '$."mpaa-rating"'
+                )
+            )
+        ) rt;
+
+
+ALTER VIEW public.films_per_customer_rental OWNER TO postgres;
+
+--
 -- Name: inventory_inventory_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -976,17 +1015,6 @@ CREATE TABLE public.payment_p2007_07_max (
 
 
 ALTER TABLE public.payment_p2007_07_max OWNER TO postgres;
-
---
--- Name: rental_report; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW public.rental_report AS
-SELECT
-    NULL::jsonb AS report;
-
-
-ALTER VIEW public.rental_report OWNER TO postgres;
 
 --
 -- Name: sales_by_film_category; Type: VIEW; Schema: public; Owner: postgres
