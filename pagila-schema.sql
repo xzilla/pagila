@@ -1556,7 +1556,7 @@ CREATE OR REPLACE VIEW public.rental_report AS
             ((((('{ "title": '::text || quote_ident((film.title)::text)) || ', "mpaa-rating": '::text) || quote_ident((film.rating)::text)) || ' }'::text))::jsonb AS jsonb
            FROM public.film
         )
- SELECT ((((((('{ "customer": '::text || quote_ident((((customer.first_name)::text || ' '::text) || (customer.last_name)::text))) || ', "rental_date": '::text) || quote_ident(((lower(rental.rental_period))::date)::text)) || ', "rentals": '::text) || json_agg(rentals.jsonb)) || '}'::text))::jsonb AS report
+ SELECT ((((((('{ "customer": '::text || quote_ident((((customer.first_name)::text || ' '::text) || (customer.last_name)::text))) || ', "rental_date": '::text) || quote_ident(((lower(rental.rental_period))::date)::text)) || ', "films": '::text) || json_agg(rentals.jsonb)) || '}'::text))::jsonb AS report
    FROM (((public.rental
      JOIN public.customer USING (customer_id))
      JOIN public.inventory USING (inventory_id))
