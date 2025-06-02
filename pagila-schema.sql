@@ -650,6 +650,8 @@ CREATE TABLE public.country (
     last_update timestamp without time zone DEFAULT now() NOT NULL
 );
 
+ALTER TABLE ONLY public.country REPLICA IDENTITY NOTHING;
+
 
 ALTER TABLE public.country OWNER TO postgres;
 
