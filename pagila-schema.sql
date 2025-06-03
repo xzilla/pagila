@@ -719,6 +719,25 @@ CREATE VIEW public.customer_list AS
 ALTER VIEW public.customer_list OWNER TO postgres;
 
 --
+-- Name: family_films; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.family_films AS
+ SELECT title,
+    description,
+    release_year,
+    language_id,
+    length,
+    rating,
+    rental_rate,
+    rental_duration
+   FROM public.film
+  WHERE (rating = ANY (ARRAY['G'::public.mpaa_rating, 'PG'::public.mpaa_rating, 'PG-13'::public.mpaa_rating]));
+
+
+ALTER VIEW public.family_films OWNER TO postgres;
+
+--
 -- Name: film_list; Type: VIEW; Schema: public; Owner: postgres
 --
 
