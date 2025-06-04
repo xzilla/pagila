@@ -7,11 +7,11 @@ Pagila is a "DVD Rental Store" type example database for PostgreSQL. It provides
 RELEASE NOTES
 -------------
 
-Version 16.a
-* Replace customer.create_date default 'now' constant with sql standard current_date
-* Add default tsrange example for rental.rental_period
-* Add sales_by_store view
-* Fix "film list" views to include films with no actors
+Version 17.a
+* Fix rental_report JSON item name to match data
+* Add JSON_TABLE based films_per_customer_rental view
+* Set country table REPLICA IDENTITY NOTHING
+* Add family_films simple updatable view
 
 
 INSTALLATION
@@ -82,7 +82,7 @@ The schema and data for the Sakila database were made available under the BSD li
 LICENSE
 -------
 
-Portions Copyright (c) 2006-2024 Robert Treat
+Portions Copyright (c) 2006-2025 Robert Treat
 Portions Copyright (c) 2006 MySQL AB
 
 Pagila is made available under The PostgreSQL License (https://opensource.org/licenses/PostgreSQL)
@@ -92,6 +92,12 @@ Note: Versions of Pagila prior to and including 0.10.1 were also made available 
 
 VERSION HISTORY
 ---------------
+
+Version 16.a
+* Replace customer.create_date default 'now' constant with sql standard current_date
+* Add default tsrange example for rental.rental_period
+* Add sales_by_store view
+* Fix "film list" views to include films with no actors
 
 Version 15.a
 * Add sales_by_film_category along with COMMENT ON view
