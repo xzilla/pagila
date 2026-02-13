@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.0
--- Dumped by pg_dump version 17.0
+\restrict pgtreats
+
+-- Dumped from database version 18.0
+-- Dumped by pg_dump version 18.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2026,4 +2028,6 @@ ALTER TABLE ONLY public.store
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict pgtreats
 
