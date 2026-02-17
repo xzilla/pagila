@@ -513,7 +513,8 @@ CREATE TABLE public.film (
     last_update timestamp without time zone DEFAULT now() NOT NULL,
     special_features text[],
     fulltext tsvector NOT NULL,
-    revenue_projection numeric(5,2) GENERATED ALWAYS AS (((rental_duration)::numeric * rental_rate)) STORED
+    rentals_to_breakeven smallint GENERATED ALWAYS AS (ceil((replacement_cost / rental_rate))),
+    revenue_projection numeric(5,2) GENERATED ALWAYS AS ((((365 / rental_duration))::numeric * rental_rate)) STORED
 );
 
 
