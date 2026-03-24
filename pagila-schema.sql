@@ -246,20 +246,136 @@ ALTER FUNCTION public.last_updated() OWNER TO postgres;
 --
 
 CREATE PROCEDURE public.make_payment_data_current()
-    LANGUAGE plpgsql SECURITY DEFINER
+    LANGUAGE plpgsql
     AS $$
+DECLARE
+    v_old_min_date      DATE;
+    v_old_max_date      DATE;
+    v_delta             INTERVAL;
+    v_new_min_date      DATE;
+    v_new_max_date      DATE;
+    v_loop_date         DATE;
+    v_partition_name    TEXT;
+    v_range_start       DATE;
+    v_range_end         DATE;
+    v_rows              INT;
 BEGIN
-LOCK TABLE payment IN ACCESS EXCLUSIVE MODE;
-CREATE temporary TABLE currentized_payments ON COMMIT DROP AS
-SELECT payment_id, customer_id, staff_id, rental_id, amount,
-payment_date + (now() - (select max(payment_date) from payment)) as payment_date FROM payment ORDER BY 6;
-TRUNCATE payment;
-DROP TABLE IF EXISTS payment_p2007_07_max;
-EXECUTE (with dates as (select date_trunc('month',generate_series(min,max,'1 month')) d from (select min(payment_date), max(payment_date) from currentized_payments) payments_range) select replace(group_concat( 'CREATE TABLE IF NOT EXISTS payment_p' || replace(date_trunc('month',d)::date::text,'-','_') || ' PARTITION OF payment FOR VALUES FROM (' || quote_literal(d::date) || ') TO (' || CASE WHEN d+'1 month'::interval < current_date THEN quote_literal((d+'1 month'::interval)::date) ELSE 'MAXVALUE' END || ')' ) , ',',';') from dates);
-insert into payment select * from currentized_payments;
-analyze payment;
-return;
-END $$;
+
+    -- capture existing min/max payment dates
+    SELECT
+        min(payment_date)::date,
+        max(payment_date)::date
+    INTO
+        v_old_min_date,
+        v_old_max_date
+    FROM payment;
+
+    IF v_old_min_date IS NULL THEN
+        RAISE EXCEPTION 'Payment table is empty — nothing to process.';
+    END IF;
+
+    RAISE NOTICE 'Old payment range: % => %', v_old_min_date, v_old_max_date;
+
+    -- calculate the date shift delta
+    v_delta        := (CURRENT_DATE - v_old_max_date) * INTERVAL '1 day';
+    v_new_min_date := v_old_min_date + v_delta;
+    v_new_max_date := CURRENT_DATE;
+
+    RAISE NOTICE 'Delta: %  |  New range: % => %', v_delta, v_new_min_date, v_new_max_date;
+
+    -- move payment rows to a temp table with new payment_dates
+    CREATE TEMP TABLE tmp_payment ON COMMIT DROP AS
+    SELECT
+        payment_id, customer_id, staff_id, rental_id, amount,
+        payment_date + v_delta  AS payment_date
+    FROM payment;
+
+    RAISE NOTICE 'Temp table created with % rows.', (SELECT count(*) FROM tmp_payment);
+
+    -- prep rework payment table partitions
+    TRUNCATE TABLE payment;
+    RAISE NOTICE 'Payment table truncated.';
+
+    DROP TABLE IF EXISTS payment_p2007_07_max;
+    RAISE NOTICE 'Dropped partition: payment_p2007_07_max';
+
+    -- create new monthly partitions from new_min_month through new_max + 1 month
+    v_loop_date := date_trunc('month', v_new_min_date)::date;
+
+    WHILE v_loop_date <= date_trunc('month', v_new_max_date + INTERVAL '1 month')::date LOOP
+
+        v_partition_name := 'payment_p'
+                            || TO_CHAR(v_loop_date, 'YYYY')
+                            || '_'
+                            || TO_CHAR(v_loop_date, 'MM');
+
+        v_range_start := v_loop_date;
+        v_range_end   := (v_loop_date + INTERVAL '1 month')::DATE;
+
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_class c
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relname = v_partition_name
+              AND n.nspname = current_schema()
+        ) THEN
+            EXECUTE format(
+                'CREATE TABLE %I PARTITION OF payment
+                 FOR VALUES FROM (%L) TO (%L)',
+                v_partition_name,
+                v_range_start,
+                v_range_end
+            );
+            RAISE NOTICE 'Created partition: % [% => %)', v_partition_name, v_range_start, v_range_end;
+        ELSE
+            RAISE NOTICE 'Partition % already exists — skipping.', v_partition_name;
+        END IF;
+
+        v_loop_date := v_range_end;
+    END LOOP;
+
+    -- Re-insert payment data from temp table
+    INSERT INTO payment (payment_id, customer_id, staff_id, rental_id, amount, payment_date)
+    SELECT payment_id, customer_id, staff_id, rental_id, amount, payment_date
+    FROM tmp_payment;
+
+    GET DIAGNOSTICS v_rows = ROW_COUNT;
+    RAISE NOTICE 'Inserted % rows back into payment.', v_rows;
+
+    -- Resync the sequence so future inserts don't collide
+    PERFORM setval(
+        pg_get_serial_sequence('payment', 'payment_id'),
+        (SELECT MAX(payment_id) FROM payment)
+    );
+
+    -- update rental_period range by the same delta
+    UPDATE rental
+    SET rental_period = CASE
+        WHEN rental_period IS NULL THEN NULL
+        ELSE
+            tsrange(
+                lower(rental_period) + v_delta,
+                CASE
+                    WHEN upper_inf(rental_period) THEN NULL
+                    ELSE upper(rental_period) + v_delta
+                END,
+                '['::text ||
+                CASE WHEN upper_inf(rental_period) THEN ')'
+                     WHEN upper_inc(rental_period) THEN ']'
+                     ELSE ')'
+                END
+            )
+        END;
+
+    GET DIAGNOSTICS v_rows = ROW_COUNT;
+    RAISE NOTICE 'Rental periods updated: % ', v_rows;
+
+    analyze payment;
+    analyze rental;
+
+    RAISE NOTICE '=== make_payment_data_current() completed successfully ===';
+
+END;
+$$;
 
 
 ALTER PROCEDURE public.make_payment_data_current() OWNER TO postgres;
