@@ -71,6 +71,21 @@ $_$;
 ALTER FUNCTION public._group_concat(text, text) OWNER TO postgres;
 
 --
+-- Name: _welcome_message(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public._welcome_message() RETURNS event_trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    AS $$
+BEGIN
+    RAISE NOTICE 'Welcome to Pagila, the time is %', now();
+END
+$$;
+
+
+ALTER FUNCTION public._welcome_message() OWNER TO postgres;
+
+--
 -- Name: film_in_stock(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2141,6 +2156,18 @@ ALTER TABLE ONLY public.store
 ALTER TABLE ONLY public.store
     ADD CONSTRAINT store_manager_staff_id_fkey FOREIGN KEY (manager_staff_id) REFERENCES public.staff(staff_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
+
+--
+-- Name: welcome_message; Type: EVENT TRIGGER; Schema: -; Owner: postgres
+--
+
+CREATE EVENT TRIGGER welcome_message ON login
+   EXECUTE FUNCTION public._welcome_message();
+
+ALTER EVENT TRIGGER welcome_message ENABLE ALWAYS;
+
+
+ALTER EVENT TRIGGER welcome_message OWNER TO postgres;
 
 --
 -- PostgreSQL database dump complete
